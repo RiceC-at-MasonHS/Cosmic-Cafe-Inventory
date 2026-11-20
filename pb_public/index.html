@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cosmic Cafe Inventory</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      .print-grid { display: grid !important; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+      .qr-card { break-inside: avoid; border: 2px solid #1e293b !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
+
+  <!-- Top Navigation -->
+  <header class="no-print bg-slate-900 border-b border-slate-800 sticky top-0 z-30">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5">
+        <span class="text-2xl">☄️☕</span>
+        <div>
+          <h1 class="font-bold text-lg tracking-tight text-white">Cosmic Cafe Inventory</h1>
+          <p id="env-badge" class="text-xs text-slate-400">Connecting to PocketBase...</p>
+        </div>
+      </div>
+
+      <nav class="flex flex-wrap gap-1.5 text-sm">
+        <button onclick="switchTab('count')" id="nav-count" class="tab-btn px-3 py-1.5 rounded-lg font-medium bg-indigo-600 text-white">Zone Count</button>
+        <button onclick="switchTab('stock')" id="nav-stock" class="tab-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800">Live Stock</button>
+        <button onclick="switchTab('leaders')" id="nav-leaders" class="tab-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800">Leaderboard</button>
+        <button onclick="switchTab('dripos')" id="nav-dripos" class="tab-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800">DripOS CSV</button>
+        <button onclick="switchTab('qr')" id="nav-qr" class="tab-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800">Print QRs</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-6">
+
+    <!-- TAB 1: BARISTA ZONE COUNTER -->
+    <section id="tab-count" class="space-y-5">
+      <div class="bg-amber-950/50 border border-amber-700/60 rounded-xl p-4 text-sm text-amber-200">
+        <strong class="font-semibold text-amber-100">Counting Rule:</strong> Count <u>whole, unopened units only</u> in the unit shown in parentheses. Always round down—ignore open or partially used containers.
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-4 bg-slate-900 p-4 rounded-xl border border-slate-800">
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">1. Storage Zone (or scan QR)</label>
+          <select id="zone-select" onchange="selectZone(this.value)" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-white font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="">Loading zones...</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">2. Barista Name / Initials</label>
+          <input id="barista-name" type="text" placeholder="e.g., Maya R." oninput="localStorage.setItem('cosmic_barista', this.value)"
+            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+      </div>
+
+      <div id="zone-header" class="flex items-center justify-between">
+        <div>
+          <h2 id="zone-title" class="text-xl font-bold text-white">Select a Zone</h2>
+          <p id="zone-desc" class="text-sm text-slate-400"></p>
+        </div>
+        <span id="zone-item-count" class="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full">0 items</span>
+      </div>
+
+      <div id="zone-items-list" class="space-y-3"></div>
+
+      <div class="sticky bottom-4 pt-2">
+        <button id="submit-count-btn" onclick="submitZoneCounts()"
+          class="w-full bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-emerald-950/60 transition flex items-center justify-center gap-2 text-base">
+          <span>Submit Zone Inventory</span>
+        </button>
+        <p id="submit-status" class="text-center text-sm mt-2 text-emerald-400 hidden"></p>
+      </div>
+    </section>
+
+    <!-- TAB 2: LIVE STOCK & REORDER OVERVIEW -->
+    <section id="tab-stock" class="hidden space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900 p-4 rounded-xl border border-slate-800">
+        <input id="stock-search" type="text" placeholder="Search items, categories, vendors..." oninput="renderStockTable()"
+          class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white w-full sm:w-72" />
+        <div class="flex items-center gap-4 text-sm">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input id="filter-low" type="checkbox" onchange="renderStockTable()" class="rounded bg-slate-800 border-slate-600" />
+            <span>Low / Out Only</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input id="filter-inactive" type="checkbox" onchange="renderStockTable()" class="rounded bg-slate-800 border-slate-600" />
+            <span>Show Inactive Campaign Items</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto bg-slate-900 rounded-xl border border-slate-800">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-slate-800/80 text-slate-300 uppercase text-xs">
+            <tr>
+              <th class="px-4 py-3">Item</th>
+              <th class="px-4 py-3">Category</th>
+              <th class="px-4 py-3 text-right">Physical</th>
+              <th class="px-4 py-3 text-right">POS Est.</th>
+              <th class="px-4 py-3 text-right">Par / Reorder</th>
+              <th class="px-4 py-3">Status</th>
+            </tr>
+          </thead>
+          <tbody id="stock-tbody" class="divide-y divide-slate-800"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 3: BARISTA LEADERBOARD -->
+    <section id="tab-leaders" class="hidden space-y-4">
+      <div class="bg-slate-900 p-5 rounded-xl border border-slate-800">
+        <h2 class="text-lg font-bold text-white mb-1">Top Inventory Counters</h2>
+        <p class="text-sm text-slate-400 mb-4">Tracks recent item updates logged by baristas for advisor recognition and rewards.</p>
+        <div id="leaderboard-list" class="space-y-2"></div>
+      </div>
+    </section>
+
+    <!-- TAB 4: DRIPOS CSV IMPORTER (ADVISOR AUTH) -->
+    <section id="tab-dripos" class="hidden space-y-4">
+      <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 space-y-4">
+        <div>
+          <h2 class="text-lg font-bold text-white">DripOS POS CSV Importer</h2>
+          <p class="text-sm text-slate-400">Upload DripOS <strong>All Product Sales</strong> or <strong>Modifier Sales</strong> CSV exports to update estimated stock between physical counts. Duplicate uploads are automatically blocked via SHA-256 batch hashing.</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-3 bg-slate-950/60 p-4 rounded-lg border border-slate-800">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Advisor Superuser Email</label>
+            <input id="admin-email" type="email" placeholder="advisor@school.org" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white" />
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Superuser Password</label>
+            <input id="admin-pass" type="password" placeholder="••••••••" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Select DripOS CSV File</label>
+          <input id="dripos-file" type="file" accept=".csv" class="block w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-500" />
+        </div>
+
+        <button onclick="uploadDriposCsv()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-5 py-2.5 rounded-lg text-sm">
+          Process & Deduct POS Sales
+        </button>
+        <pre id="dripos-result" class="text-xs bg-slate-950 p-3 rounded-lg border border-slate-800 text-slate-300 hidden overflow-x-auto"></pre>
+      </div>
+    </section>
+
+    <!-- TAB 5: PRINTABLE QR STATION SIGNS -->
+    <section id="tab-qr" class="hidden space-y-4">
+      <div class="no-print flex items-center justify-between bg-slate-900 p-4 rounded-xl border border-slate-800">
+        <div>
+          <h2 class="text-lg font-bold text-white">Printable Storage Zone QR Signs</h2>
+          <p class="text-sm text-slate-400">Print and tape each card inside its matching fridge, cabinet, or shelf door.</p>
+        </div>
+        <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg text-sm">
+          Print QR Sheet
+        </button>
+      </div>
+      <div id="qr-grid" class="print-grid grid sm:grid-cols-2 gap-4"></div>
+    </section>
+
+  </main>
+
+  <script>
+    const PB_URL = window.location.origin;
+    let state = {
+      zones: [],
+      items: [],
+      zoneCounts: new Map(), // key: `${itemId}--${zoneId}` -> qty
+      draftCounts: new Map(),
+      currentZone: ""
+    };
+
+    async function pbFetch(path, opts = {}) {
+      const res = await fetch(`${PB_URL}${path}`, {
+        headers: { "Content-Type": "application/json", ...(opts.headers || {}) },
+        ...opts
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || data.error || `HTTP ${res.status}`);
+      return data;
+    }
+
+    async function init() {
+      const savedName = localStorage.getItem("cosmic_barista");
+      if (savedName) document.getElementById("barista-name").value = savedName;
+
+      const host = window.location.hostname;
+      const isDev = host.includes("dev") || host === "localhost" || host === "127.0.0.1";
+      document.getElementById("env-badge").textContent = isDev
+        ? `DEV SANDBOX (${host})`
+        : `PRODUCTION LIVE (${host})`;
+
+      try {
+        const [zonesRes, itemsRes, zcRes] = await Promise.all([
+          pbFetch("/api/collections/zones/records?perPage=50&sort=name"),
+          pbFetch("/api/collections/items/records?perPage=500&sort=category,name"),
+          pbFetch("/api/collections/zone_counts/records?perPage=500")
+        ]);
+
+        state.zones = zonesRes.items || [];
+        state.items = itemsRes.items || [];
+        (zcRes.items || []).forEach(r => state.zoneCounts.set(`${r.item}--${r.zone}`, r.quantity));
+
+        const zoneSelect = document.getElementById("zone-select");
+        zoneSelect.innerHTML = state.zones.map(z => `<option value="${z.id}">${z.name}</option>`).join("");
+
+        const params = new URLSearchParams(window.location.search);
+        const requestedZone = params.get("zone");
+        const initialZone = state.zones.some(z => z.id === requestedZone)
+          ? requestedZone
+          : (state.zones[0]?.id || "");
+
+        zoneSelect.value = initialZone;
+        selectZone(initialZone);
+        renderStockTable();
+        renderQrCards();
+        loadLeaderboard();
+      } catch (err) {
+        document.getElementById("env-badge").textContent = `Connection Error: ${err.message}`;
+      }
+    }
+
+    function switchTab(tabId) {
+      ["count", "stock", "leaders", "dripos", "qr"].forEach(id => {
+        document.getElementById(`tab-${id}`).classList.toggle("hidden", id !== tabId);
+        const btn = document.getElementById(`nav-${id}`);
+        btn.className = id === tabId
+          ? "tab-btn px-3 py-1.5 rounded-lg font-medium bg-indigo-600 text-white"
+          : "tab-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800";
+      });
+    }
+
+    function selectZone(zoneId) {
+      state.currentZone = zoneId;
+      state.draftCounts.clear();
+
+      const url = new URL(window.location);
+      url.searchParams.set("zone", zoneId);
+      window.history.replaceState({}, "", url);
+
+      const zone = state.zones.find(z => z.id === zoneId);
+      document.getElementById("zone-title").textContent = zone ? zone.name : "Select a Zone";
+      document.getElementById("zone-desc").textContent = zone ? zone.description : "";
+
+      const zoneItems = state.items.filter(it => it.active && Array.isArray(it.zones) && it.zones.includes(zoneId));
+      document.getElementById("zone-item-count").textContent = `${zoneItems.length} active items`;
+
+      const list = document.getElementById("zone-items-list");
+      list.innerHTML = zoneItems.map(it => {
+        const key = `${it.id}--${zoneId}`;
+        const currentQty = state.zoneCounts.get(key) ?? 0;
+        state.draftCounts.set(it.id, currentQty);
+        const multiLocBadge = it.zones.length > 1
+          ? `<span class="text-xs bg-indigo-950 text-indigo-300 border border-indigo-800 px-2 py-0.5 rounded">Multi-zone (${it.zones.length})</span>`
+          : "";
+
+        return `
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center justify-between gap-3">
+            <div>
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 class="font-semibold text-white">${it.name}</h3>
+                ${multiLocBadge}
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5">Unit: <strong class="text-slate-200">${it.unit}</strong> &bull; Total across shop: ${it.total_on_hand}</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="adjustQty('${it.id}', -1)"
+                class="w-11 h-11 rounded-xl bg-slate-800 hover:bg-slate-700 text-xl font-bold text-white">-</button>
+              <input id="qty-${it.id}" type="number" min="0" step="1" value="${currentQty}"
+                onchange="setQty('${it.id}', this.value)"
+                class="w-16 h-11 text-center bg-slate-950 border border-slate-700 rounded-xl text-lg font-bold text-white" />
+              <button type="button" onclick="adjustQty('${it.id}', 1)"
+                class="w-11 h-11 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xl font-bold text-white">+</button>
+            </div>
+          </div>`;
+      }).join("");
+    }
+
+    function adjustQty(itemId, delta) {
+      const next = Math.max(0, (state.draftCounts.get(itemId) || 0) + delta);
+      state.draftCounts.set(itemId, next);
+      document.getElementById(`qty-${itemId}`).value = next;
+    }
+
+    function setQty(itemId, raw) {
+      const next = Math.max(0, Math.floor(Number(raw) || 0));
+      state.draftCounts.set(itemId, next);
+      document.getElementById(`qty-${itemId}`).value = next;
+    }
+
+    async function submitZoneCounts() {
+      const barista = document.getElementById("barista-name").value.trim() || "cafe-ipad";
+      const btn = document.getElementById("submit-count-btn");
+      const statusEl = document.getElementById("submit-status");
+      btn.disabled = true;
+      btn.textContent = "Saving counts...";
+
+      try {
+        for (const [itemId, qty] of state.draftCounts.entries()) {
+          const zcId = `${itemId}--${state.currentZone}`;
+          const payload = { item: itemId, zone: state.currentZone, quantity: qty, updated_by: barista };
+          try {
+            await pbFetch(`/api/collections/zone_counts/records/${zcId}`, {
+              method: "PATCH",
+              body: JSON.stringify(payload)
+            });
+          } catch (_) {
+            await pbFetch(`/api/collections/zone_counts/records`, {
+              method: "POST",
+              body: JSON.stringify({ id: zcId, ...payload })
+            });
+          }
+          state.zoneCounts.set(zcId, qty);
+        }
+
+        // Refresh updated totals from server
+        const itemsRes = await pbFetch("/api/collections/items/records?perPage=500&sort=category,name");
+        state.items = itemsRes.items || [];
+        selectZone(state.currentZone);
+        renderStockTable();
+        loadLeaderboard();
+
+        statusEl.textContent = `Saved ${state.draftCounts.size} items at ${new Date().toLocaleTimeString()} by ${barista}.`;
+        statusEl.classList.remove("hidden");
+      } catch (err) {
+        alert(`Error saving counts: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Submit Zone Inventory";
+      }
+    }
+
+    function renderStockTable() {
+      const query = document.getElementById("stock-search").value.toLowerCase();
+      const lowOnly = document.getElementById("filter-low").checked;
+      const showInactive = document.getElementById("filter-inactive").checked;
+
+      const filtered = state.items.filter(it => {
+        if (!showInactive && !it.active) return false;
+        if (lowOnly && it.total_on_hand > it.reorder_point) return false;
+        if (query && !`${it.name} ${it.category} ${it.vendor}`.toLowerCase().includes(query)) return false;
+        return true;
+      });
+
+      document.getElementById("stock-tbody").innerHTML = filtered.map(it => {
+        let badge = `<span class="px-2 py-0.5 rounded text-xs bg-emerald-950 text-emerald-300 border border-emerald-800">OK</span>`;
+        if (!it.active) badge = `<span class="px-2 py-0.5 rounded text-xs bg-slate-800 text-slate-400">Inactive</span>`;
+        else if (it.total_on_hand <= 0) badge = `<span class="px-2 py-0.5 rounded text-xs bg-rose-950 text-rose-300 border border-rose-800 font-bold">OUT (0)</span>`;
+        else if (it.total_on_hand <= it.reorder_point) badge = `<span class="px-2 py-0.5 rounded text-xs bg-amber-950 text-amber-300 border border-amber-800">LOW</span>`;
+
+        return `
+          <tr class="hover:bg-slate-800/40">
+            <td class="px-4 py-2.5 font-medium text-white">${it.name} <span class="text-xs text-slate-400">(${it.unit})</span></td>
+            <td class="px-4 py-2.5 text-slate-400 text-xs">${it.category}</td>
+            <td class="px-4 py-2.5 text-right font-bold text-white">${it.total_on_hand}</td>
+            <td class="px-4 py-2.5 text-right text-slate-300">${it.estimated_on_hand ?? it.total_on_hand}</td>
+            <td class="px-4 py-2.5 text-right text-slate-400">${it.par_level} / ${it.reorder_point}</td>
+            <td class="px-4 py-2.5">${badge}</td>
+          </tr>`;
+      }).join("");
+    }
+
+    async function loadLeaderboard() {
+      try {
+        const logs = await pbFetch("/api/collections/count_logs/records?perPage=500&sort=-created");
+        const counts = new Map();
+        (logs.items || []).forEach(l => {
+          const who = l.counted_by || "cafe-ipad";
+          if (who === "initial-seed") return;
+          counts.set(who, (counts.get(who) || 0) + 1);
+        });
+        const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+        document.getElementById("leaderboard-list").innerHTML = sorted.length
+          ? sorted.map(([name, total], i) => `
+              <div class="flex items-center justify-between bg-slate-950/70 px-4 py-3 rounded-lg border border-slate-800">
+                <span class="font-medium text-white">#${i + 1} &nbsp; ${name}</span>
+                <span class="text-sm font-bold text-indigo-400">${total} item counts</span>
+              </div>`).join("")
+          : `<p class="text-sm text-slate-400">No barista counts logged yet.</p>`;
+      } catch (_) {}
+    }
+
+    async function uploadDriposCsv() {
+      const email = document.getElementById("admin-email").value.trim();
+      const password = document.getElementById("admin-pass").value;
+      const file = document.getElementById("dripos-file").files[0];
+      const out = document.getElementById("dripos-result");
+
+      if (!email || !password || !file) {
+        alert("Please enter superuser credentials and choose a DripOS CSV file.");
+        return;
+      }
+
+      try {
+        const auth = await pbFetch("/api/collections/_superusers/auth-with-password", {
+          method: "POST",
+          body: JSON.stringify({ identity: email, password })
+        });
+
+        const text = await file.text();
+        const lines = text.split(/\r?\n/).filter(Boolean);
+        const headers = lines[0].split(",").map(h => h.replace(/^"|"$/g, "").trim().toLowerCase());
+        const skuIdx = headers.findIndex(h => h.includes("product") || h.includes("modifier") || h.includes("name") || h.includes("sku"));
+        const qtyIdx = headers.findIndex(h => h.includes("qty") || h.includes("quantity") || h.includes("sold") || h.includes("count"));
+
+        if (skuIdx === -1 || qtyIdx === -1) {
+          throw new Error(`Could not detect SKU/Name and Quantity columns in headers: ${headers.join(", ")}`);
+        }
+
+        const rows = lines.slice(1).map(line => {
+          const cols = line.split(",").map(c => c.replace(/^"|"$/g, "").trim());
+          return { sku: cols[skuIdx], qty: Number(cols[qtyIdx]) || 0 };
+        }).filter(r => r.sku && r.qty > 0);
+
+        const result = await pbFetch("/api/cosmic/import-dripos", {
+          method: "POST",
+          headers: { Authorization: auth.token },
+          body: JSON.stringify({ filename: file.name, rows })
+        });
+
+        out.textContent = JSON.stringify(result, null, 2);
+        out.classList.remove("hidden");
+      } catch (err) {
+        out.textContent = `Import failed: ${err.message}`;
+        out.classList.remove("hidden");
+      }
+    }
+
+    function renderQrCards() {
+      const grid = document.getElementById("qr-grid");
+      grid.innerHTML = state.zones.map(z => {
+        const targetUrl = `${window.location.origin}/?zone=${encodeURIComponent(z.id)}`;
+        return `
+          <div class="qr-card bg-white text-slate-900 rounded-xl p-5 flex items-center gap-4 border border-slate-300">
+            <div id="qr-${z.id}" class="shrink-0"></div>
+            <div>
+              <p class="text-xs font-bold uppercase tracking-wider text-indigo-600">Cosmic Cafe Inventory</p>
+              <h3 class="text-xl font-extrabold text-slate-900">${z.name}</h3>
+              <p class="text-xs text-slate-600 mt-1">${z.description}</p>
+              <p class="text-[11px] font-mono text-slate-500 mt-2 break-all">${targetUrl}</p>
+            </div>
+          </div>`;
+      }).join("");
+
+      state.zones.forEach(z => {
+        const targetUrl = `${window.location.origin}/?zone=${encodeURIComponent(z.id)}`;
+        new QRCode(document.getElementById(`qr-${z.id}`), {
+          text: targetUrl,
+          width: 112,
+          height: 112
+        });
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
