@@ -246,3 +246,108 @@ routerAdd(
   },
   $apis.requireSuperuserAuth()
 );
+
+// ----------------------------------------------------------------------------
+// 4. Semester Barista Roster CSV Ingestion Endpoint
+//    POST /api/cosmic/import-baristas
+//    Body: {
+//      "semester": "Spring 2027",
+//      "deactivateOthers": true,
+//      "rows": [{ "first_name": "Jordan", "last_name": "Miller", "email": "jmiller@masonohioschools.com" }]
+//    }
+//    Upserts baristas by email (or first+last name) and optionally deactivates
+//    former-semester baristas so autocomplete stays current without losing logs.
+// ----------------------------------------------------------------------------
+routerAdd(
+  "POST",
+  "/api/cosmic/import-baristas",
+  (e) => {
+    const body = e.requestInfo().body;
+    const rows = body.rows || [];
+    const semester = String(body.semester || "").trim();
+    const deactivateOthers = body.deactivateOthers !== false;
+
+    if (!Array.isArray(rows) || rows.length === 0) {
+      return e.json(400, { error: "Payload must include a non-empty 'rows' array." });
+    }
+
+    const baristasCol = $app.findCollectionByNameOrId("baristas");
+    const existingAll = $app.findRecordsByFilter("baristas", "id != ''", "", 1000, 0);
+
+    const byEmail = {};
+    const byName = {};
+    for (const rec of existingAll) {
+      const em = rec.getString("email").trim().toLowerCase();
+      const fn = rec.getString("full_name").trim().toLowerCase();
+      if (em) byEmail[em] = rec;
+      if (fn) byName[fn] = rec;
+    }
+
+    const seenIds = {};
+    let created = 0;
+    let updated = 0;
+
+    for (const raw of rows) {
+      const firstName = String(raw.first_name || "").trim();
+      const lastName = String(raw.last_name || "").trim();
+      const email = String(raw.email || "").trim().toLowerCase();
+      const fullName = `${firstName} ${lastName}`.trim();
+
+      if (!fullName && !email) continue;
+
+      let target = (email && byEmail[email]) || (fullName && byName[fullName.toLowerCase()]) || null;
+      const isNew = !target;
+
+      if (isNew) {
+        target = new Record(baristasCol);
+      }
+
+      target.set("first_name", firstName || fullName);
+      target.set("last_name", lastName);
+      target.set("full_name", fullName || email);
+      if (email) {
+        target.set("email", email);
+      }
+      if (semester) {
+        target.set("semester", semester);
+      }
+      target.set("active", true);
+      $app.save(target);
+
+      seenIds[target.id] = true;
+      if (email) byEmail[email] = target;
+      if (fullName) byName[fullName.toLowerCase()] = target;
+
+      if (isNew) {
+        created++;
+      } else {
+        updated++;
+      }
+    }
+
+    let deactivated = 0;
+    if (deactivateOthers) {
+      for (const rec of existingAll) {
+        if (!seenIds[rec.id] && rec.getBool("active")) {
+          rec.set("active", false);
+          $app.save(rec);
+          deactivated++;
+        }
+      }
+    }
+
+    $app.logger().info(
+      `Barista roster imported (${semester || "unspecified"}): created=${created}, updated=${updated}, deactivated=${deactivated}`
+    );
+
+    return e.json(200, {
+      status: "imported",
+      semester,
+      created,
+      updated,
+      deactivated,
+      totalActive: Object.keys(seenIds).length,
+    });
+  },
+  $apis.requireSuperuserAuth()
+);
