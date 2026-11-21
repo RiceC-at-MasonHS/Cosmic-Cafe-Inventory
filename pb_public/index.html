@@ -217,7 +217,7 @@
       position: absolute;
       right: 0;
       top: calc(100% + 0.45rem);
-      min-width: 225px;
+      min-width: 245px;
       background-color: #FFFFFF;
       border: 1px solid var(--border-light);
       border-top: 3px solid var(--mcs-blue);
@@ -354,13 +354,13 @@
 
     .barista-bar {
       display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 0.75rem;
-      align-items: center;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 0.85rem;
+      align-items: start;
       background-color: var(--bg-card);
       border: 1px solid var(--border-light);
       border-radius: var(--radius-md);
-      padding: 0.9rem 1.1rem;
+      padding: 0.95rem 1.1rem;
       margin-bottom: 1rem;
       box-shadow: var(--shadow-card);
     }
@@ -369,6 +369,15 @@
       display: flex;
       flex-direction: column;
       gap: 0.25rem;
+      position: relative;
+    }
+
+    .field-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
     }
 
     .field-label {
@@ -377,6 +386,135 @@
       text-transform: uppercase;
       letter-spacing: 0.04em;
       color: var(--text-secondary);
+    }
+
+    .remembered-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--mcs-green-deep);
+      background-color: var(--status-ok-bg);
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+    }
+
+    .switch-user-link {
+      appearance: none;
+      border: none;
+      background: transparent;
+      color: var(--mcs-blue);
+      font-family: var(--font-primary);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-decoration: underline;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .switch-user-link:hover {
+      color: var(--mcs-navy);
+    }
+
+    /* Mobile-First Barista Autocomplete Dropdown */
+    .autocomplete-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .autocomplete-wrap input[type="text"] {
+      width: 100%;
+      padding-right: 2.2rem;
+    }
+
+    .clear-input-btn {
+      position: absolute;
+      right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      appearance: none;
+      border: none;
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .clear-input-btn.visible {
+      display: inline-flex;
+    }
+
+    .autocomplete-list {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 4px);
+      background-color: #FFFFFF;
+      border: 1.5px solid var(--mcs-navy);
+      border-top: 3px solid var(--mcs-green-deep);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-dropdown);
+      max-height: 270px;
+      overflow-y: auto;
+      z-index: 160;
+      display: none;
+    }
+
+    .autocomplete-list.open {
+      display: block;
+    }
+
+    .autocomplete-option {
+      width: 100%;
+      appearance: none;
+      border: none;
+      border-bottom: 1px solid var(--border-light);
+      background: #FFFFFF;
+      text-align: left;
+      font-family: var(--font-primary);
+      padding: 0.65rem 0.85rem;
+      min-height: 50px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.65rem;
+    }
+
+    .autocomplete-option:last-child {
+      border-bottom: none;
+    }
+
+    .autocomplete-option:hover,
+    .autocomplete-option.highlighted {
+      background-color: var(--status-ok-bg);
+    }
+
+    .ac-name {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--mcs-navy);
+    }
+
+    .ac-email {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .ac-empty {
+      padding: 0.7rem 0.85rem;
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      background-color: #FAFBFD;
     }
 
     input[type="text"],
@@ -713,7 +851,7 @@
     .badge-inactive { background-color: var(--bg-subtle); color: var(--mcs-grey); }
 
     /* --------------------------------------------------------------------------
-       DripOS CSV Dropzone
+       CSV Dropzones (DripOS & Semester Barista Roster)
        -------------------------------------------------------------------------- */
     .dropzone {
       border: 2px dashed var(--mcs-blue);
@@ -736,6 +874,24 @@
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 0.85rem;
       margin-bottom: 1rem;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--mcs-navy);
+      margin-bottom: 1rem;
+      cursor: pointer;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--mcs-green-deep);
+      cursor: pointer;
     }
 
     /* --------------------------------------------------------------------------
@@ -822,14 +978,14 @@
       font-size: 0.94rem;
       z-index: 300;
       display: none;
-      max-width: 380px;
+      max-width: 390px;
     }
 
     .toast.error {
       border-left-color: #FF5252;
     }
 
-    @media (max-width: 640px) {
+    @media (max-width: 680px) {
       .barista-bar {
         grid-template-columns: 1fr;
       }
@@ -903,7 +1059,7 @@
           Leaderboard
         </button>
 
-        <!-- Clustered Admin Dropdown: Live Stock, DripOS CSV, Print QR -->
+        <!-- Clustered Admin Dropdown: Live Stock, DripOS CSV, Barista Roster, Print QR -->
         <div class="nav-dropdown" id="adminDropdown">
           <button
             type="button"
@@ -924,6 +1080,10 @@
             <button type="button" class="dropdown-item" role="menuitem" data-tab="dripos" onclick="selectAdminTab('dripos')">
               <span class="dropdown-item-title">DripOS CSV</span>
               <span class="dropdown-item-desc">Import POS product &amp; modifier sales</span>
+            </button>
+            <button type="button" class="dropdown-item" role="menuitem" data-tab="baristas" onclick="selectAdminTab('baristas')">
+              <span class="dropdown-item-title">Barista Roster</span>
+              <span class="dropdown-item-desc">Upload semester barista CSV for autocomplete</span>
             </button>
             <button type="button" class="dropdown-item" role="menuitem" data-tab="qr" onclick="selectAdminTab('qr')">
               <span class="dropdown-item-title">Print QR</span>
@@ -957,8 +1117,41 @@
 
       <div class="barista-bar">
         <div class="field-group">
-          <label class="field-label" for="baristaNameInput">Barista Name or Initials (for Leaderboard)</label>
-          <input type="text" id="baristaNameInput" placeholder="e.g., Jordan M. or jm2027" autocomplete="name" />
+          <div class="field-label-row">
+            <label class="field-label" for="baristaNameInput">Barista Name or Email</label>
+            <div id="rememberedStatusWrap" style="display:none; align-items:center; gap:0.5rem;">
+              <span class="remembered-pill" id="rememberedBadge">Saved on this phone</span>
+              <button type="button" class="switch-user-link" onclick="switchBaristaIdentity()">Not you? Switch</button>
+            </div>
+          </div>
+          <div class="autocomplete-wrap" id="baristaAutocompleteWrap">
+            <input
+              type="text"
+              id="baristaNameInput"
+              placeholder="Start typing your name or school email..."
+              autocomplete="off"
+              autocapitalize="words"
+              spellcheck="false"
+              enterkeyhint="done"
+              role="combobox"
+              aria-autocomplete="list"
+              aria-expanded="false"
+              aria-controls="baristaAutocompleteList"
+              onfocus="openBaristaAutocomplete()"
+              oninput="onBaristaInput(this.value)"
+              onkeydown="onBaristaKeydown(event)"
+              onblur="onBaristaBlur()"
+            />
+            <button
+              type="button"
+              id="clearBaristaBtn"
+              class="clear-input-btn"
+              title="Clear barista name"
+              aria-label="Clear barista name"
+              onpointerdown="event.preventDefault(); switchBaristaIdentity();"
+            >&times;</button>
+            <div id="baristaAutocompleteList" class="autocomplete-list" role="listbox"></div>
+          </div>
         </div>
         <div class="field-group">
           <label class="field-label" for="zoneSelectMobile">Quick Jump Zone</label>
@@ -1036,11 +1229,11 @@
         <div class="form-row-2">
           <div class="field-group">
             <label class="field-label" for="adminEmailInput">Advisor PocketBase Email</label>
-            <input type="email" id="adminEmailInput" placeholder="stemplek@masonohioschools.com" />
+            <input type="email" id="adminEmailInput" placeholder="stemplek@masonohioschools.com" oninput="syncAdminCredentials('email', this.value)" />
           </div>
           <div class="field-group">
             <label class="field-label" for="adminPassInput">Advisor Password</label>
-            <input type="password" id="adminPassInput" placeholder="Enter PocketBase superuser password" />
+            <input type="password" id="adminPassInput" placeholder="Enter PocketBase superuser password" oninput="syncAdminCredentials('pass', this.value)" />
           </div>
         </div>
 
@@ -1070,7 +1263,83 @@
     </section>
 
     <!-- ======================================================================
-         4. PRINTABLE QR STATION LABELS SECTION (Admin Dropdown)
+         4. SEMESTER BARISTA ROSTER CSV SECTION (Admin Dropdown)
+         ====================================================================== -->
+    <section id="tab-baristas" class="view-section">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Semester Barista Roster</h1>
+          <p class="section-subtitle">Upload your semester barista CSV (first name, last name, email) so students get instant phone autocomplete and clean leaderboard attribution.</p>
+        </div>
+        <button type="button" class="btn-secondary" onclick="downloadBaristaTemplate()">Download Sample CSV</button>
+      </div>
+
+      <div class="card">
+        <div class="form-row-2">
+          <div class="field-group">
+            <label class="field-label" for="baristaAdminEmail">Advisor PocketBase Email</label>
+            <input type="email" id="baristaAdminEmail" placeholder="stemplek@masonohioschools.com" oninput="syncAdminCredentials('email', this.value)" />
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="baristaAdminPass">Advisor Password</label>
+            <input type="password" id="baristaAdminPass" placeholder="Enter PocketBase superuser password" oninput="syncAdminCredentials('pass', this.value)" />
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="semesterLabelInput">Semester Label</label>
+            <input type="text" id="semesterLabelInput" placeholder="e.g., Fall 2026" />
+          </div>
+        </div>
+
+        <label class="checkbox-row">
+          <input type="checkbox" id="deactivateFormerBaristas" checked />
+          <span>Deactivate previous-semester baristas not included in this CSV (keeps past leaderboard logs intact)</span>
+        </label>
+
+        <div class="dropzone" id="baristaDropzone" onclick="document.getElementById('baristaFileInput').click()">
+          <p style="font-size:1.05rem; font-weight:700; color:var(--mcs-navy);">Drop your semester barista CSV here or click to browse</p>
+          <p style="font-size:0.88rem; color:var(--text-secondary); margin-top:0.25rem;">
+            Expected columns: <strong>first_name</strong>, <strong>last_name</strong>, and <strong>email</strong> (header names are matched flexibly).
+          </p>
+          <input type="file" id="baristaFileInput" accept=".csv,text/csv" style="display:none" onchange="handleBaristaCsvFile(this.files[0])" />
+        </div>
+
+        <div id="baristaPreviewBox" style="display:none; margin-top:1.1rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:0.75rem;">
+            <strong id="baristaPreviewSummary">Parsed 0 baristas</strong>
+            <button type="button" class="btn-primary" id="submitBaristasBtn" onclick="uploadBaristaRoster()">Save Semester Roster</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>First Name</th><th>Last Name</th><th>Email</th></tr>
+              </thead>
+              <tbody id="baristaPreviewBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:0.85rem;">
+          <div>
+            <h2 style="font-size:1.15rem; font-weight:700; color:var(--mcs-navy);">Active Autocomplete Roster (<span id="activeRosterCount">0</span>)</h2>
+            <p style="font-size:0.86rem; color:var(--text-secondary);">These baristas appear in the phone autocomplete list on the Count Zone screen.</p>
+          </div>
+          <input type="text" id="rosterSearchInput" placeholder="Filter active roster..." oninput="renderActiveRosterTable()" style="min-width:220px;" />
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Name</th><th>Email</th><th>Semester</th></tr>
+            </thead>
+            <tbody id="activeRosterBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         5. PRINTABLE QR STATION LABELS SECTION (Admin Dropdown)
          ====================================================================== -->
     <section id="tab-qr" class="view-section">
       <div class="section-header">
@@ -1085,7 +1354,7 @@
     </section>
 
     <!-- ======================================================================
-         5. BARISTA LEADERBOARD SECTION
+         6. BARISTA LEADERBOARD SECTION
          ====================================================================== -->
     <section id="tab-leaderboard" class="view-section">
       <div class="section-header">
@@ -1117,15 +1386,22 @@
     // Cosmic Cafe Frontend Controller (Zero external JS dependencies)
     // =========================================================================
     const PB_BASE = window.location.origin;
+    const STORAGE_KEY_PROFILE = 'cosmic_barista_profile_v1';
+    const STORAGE_KEY_LEGACY = 'cosmic_barista_name';
 
     const state = {
       zones: [],
       items: [],
       zoneCounts: [],
+      baristas: [], // Active semester baristas for autocomplete & leaderboard resolution
+      allBaristas: [], // Includes inactive baristas for historical leaderboard normalization
       selectedZoneId: null,
       draftQuantities: {}, // itemId -> number
       stockFilter: 'all',
-      parsedCsv: null
+      parsedCsv: null,
+      parsedBaristas: null,
+      acHighlightedIndex: -1,
+      acFilteredList: []
     };
 
     // Mason City Schools Editorial Standard (Slide 32): Always use long date format
@@ -1151,10 +1427,23 @@
       }, 4200);
     }
 
+    // Sync advisor PocketBase login across DripOS CSV & Barista Roster tabs
+    function syncAdminCredentials(field, value) {
+      if (field === 'email') {
+        sessionStorage.setItem('cosmic_admin_email', value);
+        document.getElementById('adminEmailInput').value = value;
+        document.getElementById('baristaAdminEmail').value = value;
+      } else if (field === 'pass') {
+        sessionStorage.setItem('cosmic_admin_pass', value);
+        document.getElementById('adminPassInput').value = value;
+        document.getElementById('baristaAdminPass').value = value;
+      }
+    }
+
     // -------------------------------------------------------------------------
     // Navigation & Admin Dropdown Behavior
     // -------------------------------------------------------------------------
-    const ADMIN_TABS = new Set(['stock', 'dripos', 'qr']);
+    const ADMIN_TABS = new Set(['stock', 'dripos', 'baristas', 'qr']);
 
     function toggleAdminDropdown(event) {
       event.stopPropagation();
@@ -1181,12 +1470,10 @@
         sec.classList.toggle('active', sec.id === `tab-${tabId}`);
       });
 
-      // Highlight top-level buttons
       document.querySelectorAll('.nav-bar > .nav-btn').forEach((btn) => {
         btn.classList.toggle('active', btn.dataset.tab === tabId);
       });
 
-      // Highlight Admin dropdown button & active menu item when an Admin view is active
       const adminBtn = document.getElementById('adminDropdownBtn');
       adminBtn.classList.toggle('active', ADMIN_TABS.has(tabId));
       document.querySelectorAll('.dropdown-item').forEach((item) => {
@@ -1195,6 +1482,8 @@
 
       if (tabId === 'leaderboard') {
         loadLeaderboard();
+      } else if (tabId === 'baristas') {
+        renderActiveRosterTable();
       }
     }
 
@@ -1203,11 +1492,16 @@
       if (dropdown && !dropdown.contains(e.target)) {
         closeAdminDropdown();
       }
+      const acWrap = document.getElementById('baristaAutocompleteWrap');
+      if (acWrap && !acWrap.contains(e.target)) {
+        closeBaristaAutocomplete();
+      }
     });
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeAdminDropdown();
+        closeBaristaAutocomplete();
       }
     });
 
@@ -1223,14 +1517,17 @@
 
     async function loadAllData() {
       try {
-        const [zones, items, zoneCounts] = await Promise.all([
+        const [zones, items, zoneCounts, baristas] = await Promise.all([
           pbList('zones', 'sort=name'),
           pbList('items', 'sort=category,name'),
-          pbList('zone_counts')
+          pbList('zone_counts'),
+          pbList('baristas', 'sort=last_name,first_name').catch(() => [])
         ]);
         state.zones = zones;
         state.items = items;
         state.zoneCounts = zoneCounts;
+        state.allBaristas = baristas;
+        state.baristas = baristas.filter((b) => b.active !== false);
 
         const params = new URLSearchParams(window.location.search);
         const requestedZone = params.get('zone');
@@ -1242,11 +1539,230 @@
         renderZoneControls();
         renderZoneCountCards();
         renderStockTable();
+        renderActiveRosterTable();
         renderQrCards();
       } catch (err) {
         console.error(err);
         showToast('Could not connect to PocketBase API. Ensure the server is running and seeded.', true);
       }
+    }
+
+    // -------------------------------------------------------------------------
+    // Barista Autocomplete + Multi-Session Phone Persistence (localStorage)
+    // -------------------------------------------------------------------------
+    function persistBaristaIdentity(rawValue, matchedBarista = null) {
+      const cleaned = (rawValue || '').trim();
+      const statusWrap = document.getElementById('rememberedStatusWrap');
+      const clearBtn = document.getElementById('clearBaristaBtn');
+
+      if (!cleaned) {
+        localStorage.removeItem(STORAGE_KEY_PROFILE);
+        localStorage.removeItem(STORAGE_KEY_LEGACY);
+        statusWrap.style.display = 'none';
+        clearBtn.classList.remove('visible');
+        return;
+      }
+
+      const barista = matchedBarista || matchBaristaRecord(cleaned);
+      const profile = barista
+        ? {
+            fullName: barista.full_name,
+            email: barista.email || '',
+            displayValue: barista.full_name,
+            savedAt: new Date().toISOString()
+          }
+        : {
+            fullName: cleaned,
+            email: cleaned.includes('@') ? cleaned.toLowerCase() : '',
+            displayValue: cleaned,
+            savedAt: new Date().toISOString()
+          };
+
+      localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(profile));
+      localStorage.setItem(STORAGE_KEY_LEGACY, profile.displayValue);
+
+      statusWrap.style.display = 'inline-flex';
+      clearBtn.classList.add('visible');
+    }
+
+    function restoreBaristaIdentity() {
+      const input = document.getElementById('baristaNameInput');
+      const statusWrap = document.getElementById('rememberedStatusWrap');
+      const clearBtn = document.getElementById('clearBaristaBtn');
+
+      try {
+        const rawJson = localStorage.getItem(STORAGE_KEY_PROFILE);
+        if (rawJson) {
+          const profile = JSON.parse(rawJson);
+          if (profile && profile.displayValue) {
+            input.value = profile.displayValue;
+            statusWrap.style.display = 'inline-flex';
+            clearBtn.classList.add('visible');
+            return;
+          }
+        }
+      } catch (_) {}
+
+      const legacyName = localStorage.getItem(STORAGE_KEY_LEGACY);
+      if (legacyName) {
+        input.value = legacyName;
+        statusWrap.style.display = 'inline-flex';
+        clearBtn.classList.add('visible');
+      }
+    }
+
+    function switchBaristaIdentity() {
+      const input = document.getElementById('baristaNameInput');
+      input.value = '';
+      persistBaristaIdentity('');
+      input.focus();
+      openBaristaAutocomplete();
+    }
+
+    function matchBaristaRecord(queryStr, includeInactive = false) {
+      const q = (queryStr || '').trim().toLowerCase();
+      if (!q) return null;
+      const pool = includeInactive ? state.allBaristas : state.baristas;
+      return (
+        pool.find((b) => (b.email || '').trim().toLowerCase() === q) ||
+        pool.find((b) => (b.full_name || '').trim().toLowerCase() === q) ||
+        null
+      );
+    }
+
+    function resolveCanonicalBaristaName(rawInput) {
+      const trimmed = (rawInput || '').trim();
+      if (!trimmed) return 'cafe-ipad';
+      const match = matchBaristaRecord(trimmed, true);
+      return match ? match.full_name : trimmed;
+    }
+
+    function filterBaristaSuggestions(query) {
+      const q = (query || '').trim().toLowerCase();
+      if (!q) return state.baristas.slice(0, 12);
+      return state.baristas
+        .filter((b) => {
+          const fn = (b.first_name || '').toLowerCase();
+          const ln = (b.last_name || '').toLowerCase();
+          const full = (b.full_name || '').toLowerCase();
+          const em = (b.email || '').toLowerCase();
+          return fn.includes(q) || ln.includes(q) || full.includes(q) || em.includes(q);
+        })
+        .slice(0, 12);
+    }
+
+    function renderBaristaAutocomplete(query) {
+      const listEl = document.getElementById('baristaAutocompleteList');
+      const inputEl = document.getElementById('baristaNameInput');
+      const matches = filterBaristaSuggestions(query);
+      state.acFilteredList = matches;
+
+      if (state.baristas.length === 0) {
+        listEl.classList.remove('open');
+        inputEl.setAttribute('aria-expanded', 'false');
+        return;
+      }
+
+      if (matches.length === 0) {
+        listEl.innerHTML = `<div class="ac-empty">No roster match for &ldquo;${escapeHtml(query)}&rdquo; &mdash; your typed name will still be saved on this phone.</div>`;
+      } else {
+        listEl.innerHTML = matches
+          .map((b, idx) => {
+            const hl = idx === state.acHighlightedIndex ? 'highlighted' : '';
+            const emailHtml = b.email ? `<span class="ac-email">${escapeHtml(b.email)}</span>` : '';
+            return `
+              <button
+                type="button"
+                role="option"
+                class="autocomplete-option ${hl}"
+                onpointerdown="event.preventDefault(); selectBaristaSuggestion(${idx});"
+              >
+                <span class="ac-name">${escapeHtml(b.full_name)}</span>
+                ${emailHtml}
+              </button>
+            `;
+          })
+          .join('');
+      }
+
+      listEl.classList.add('open');
+      inputEl.setAttribute('aria-expanded', 'true');
+    }
+
+    function openBaristaAutocomplete() {
+      const val = document.getElementById('baristaNameInput').value;
+      state.acHighlightedIndex = -1;
+      renderBaristaAutocomplete(val);
+    }
+
+    function closeBaristaAutocomplete() {
+      const listEl = document.getElementById('baristaAutocompleteList');
+      const inputEl = document.getElementById('baristaNameInput');
+      if (listEl) listEl.classList.remove('open');
+      if (inputEl) inputEl.setAttribute('aria-expanded', 'false');
+      state.acHighlightedIndex = -1;
+    }
+
+    function onBaristaInput(val) {
+      const clearBtn = document.getElementById('clearBaristaBtn');
+      clearBtn.classList.toggle('visible', val.trim().length > 0);
+      state.acHighlightedIndex = -1;
+      renderBaristaAutocomplete(val);
+    }
+
+    function onBaristaKeydown(event) {
+      const listEl = document.getElementById('baristaAutocompleteList');
+      const isOpen = listEl.classList.contains('open');
+      if (!isOpen && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
+        openBaristaAutocomplete();
+        return;
+      }
+      if (!isOpen) return;
+
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        if (state.acFilteredList.length > 0) {
+          state.acHighlightedIndex = (state.acHighlightedIndex + 1) % state.acFilteredList.length;
+          renderBaristaAutocomplete(document.getElementById('baristaNameInput').value);
+        }
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        if (state.acFilteredList.length > 0) {
+          state.acHighlightedIndex =
+            (state.acHighlightedIndex - 1 + state.acFilteredList.length) % state.acFilteredList.length;
+          renderBaristaAutocomplete(document.getElementById('baristaNameInput').value);
+        }
+      } else if (event.key === 'Enter') {
+        if (state.acHighlightedIndex >= 0 && state.acFilteredList[state.acHighlightedIndex]) {
+          event.preventDefault();
+          selectBaristaSuggestion(state.acHighlightedIndex);
+        } else {
+          closeBaristaAutocomplete();
+          persistBaristaIdentity(document.getElementById('baristaNameInput').value);
+        }
+      }
+    }
+
+    function selectBaristaSuggestion(index) {
+      const barista = state.acFilteredList[index];
+      if (!barista) return;
+      const input = document.getElementById('baristaNameInput');
+      input.value = barista.full_name;
+      persistBaristaIdentity(barista.full_name, barista);
+      closeBaristaAutocomplete();
+    }
+
+    function onBaristaBlur() {
+      // Save whatever the barista typed/selected to phone localStorage right away
+      const val = document.getElementById('baristaNameInput').value;
+      const matched = matchBaristaRecord(val, false);
+      if (matched) {
+        document.getElementById('baristaNameInput').value = matched.full_name;
+        persistBaristaIdentity(matched.full_name, matched);
+      } else if (val.trim()) {
+        persistBaristaIdentity(val);
+      }
+      setTimeout(closeBaristaAutocomplete, 120);
     }
 
     // -------------------------------------------------------------------------
@@ -1380,8 +1896,16 @@
     async function saveZoneCounts() {
       const btn = document.getElementById('saveZoneBtn');
       const baristaInput = document.getElementById('baristaNameInput');
-      const countedBy = (baristaInput.value || '').trim() || 'cafe-ipad';
-      localStorage.setItem('cosmic_barista_name', baristaInput.value.trim());
+      const rawName = (baristaInput.value || '').trim();
+      const matched = matchBaristaRecord(rawName, false);
+      const countedBy = matched ? matched.full_name : rawName || 'cafe-ipad';
+
+      if (matched && baristaInput.value !== matched.full_name) {
+        baristaInput.value = matched.full_name;
+      }
+      if (rawName) {
+        persistBaristaIdentity(countedBy, matched);
+      }
 
       const zoneItems = state.items.filter(
         (item) => item.active !== false && Array.isArray(item.zones) && item.zones.includes(state.selectedZoneId)
@@ -1425,7 +1949,7 @@
 
         state.draftQuantities = {};
         await loadAllData();
-        showToast('Station count saved and cross-zone totals updated.');
+        showToast(`Station count saved by ${countedBy}.`);
       } catch (err) {
         console.error(err);
         showToast('Error saving station count. Please try again.', true);
@@ -1516,20 +2040,8 @@
     }
 
     // -------------------------------------------------------------------------
-    // DripOS CSV Importer
+    // Shared CSV Line Parser
     // -------------------------------------------------------------------------
-    const dropzone = document.getElementById('csvDropzone');
-    dropzone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      dropzone.classList.add('dragover');
-    });
-    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
-    dropzone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropzone.classList.remove('dragover');
-      if (e.dataTransfer.files?.[0]) handleCsvFile(e.dataTransfer.files[0]);
-    });
-
     function parseCsvLine(line) {
       const out = [];
       let cur = '';
@@ -1548,6 +2060,21 @@
       out.push(cur.trim());
       return out;
     }
+
+    // -------------------------------------------------------------------------
+    // DripOS CSV Importer
+    // -------------------------------------------------------------------------
+    const dropzone = document.getElementById('csvDropzone');
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      if (e.dataTransfer.files?.[0]) handleCsvFile(e.dataTransfer.files[0]);
+    });
 
     async function handleCsvFile(file) {
       if (!file) return;
@@ -1632,6 +2159,185 @@
     }
 
     // -------------------------------------------------------------------------
+    // Semester Barista Roster CSV Uploader
+    // -------------------------------------------------------------------------
+    const baristaDropzone = document.getElementById('baristaDropzone');
+    baristaDropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      baristaDropzone.classList.add('dragover');
+    });
+    baristaDropzone.addEventListener('dragleave', () => baristaDropzone.classList.remove('dragover'));
+    baristaDropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      baristaDropzone.classList.remove('dragover');
+      if (e.dataTransfer.files?.[0]) handleBaristaCsvFile(e.dataTransfer.files[0]);
+    });
+
+    function downloadBaristaTemplate() {
+      const sample = [
+        'first_name,last_name,email',
+        'Jordan,Miller,jmiller@masonohioschools.com',
+        'Maya,Patel,mpatel@masonohioschools.com',
+        'Liam,Chen,lchen@masonohioschools.com'
+      ].join('\n');
+      const blob = new Blob([sample], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'cosmic-cafe-baristas-template.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    async function handleBaristaCsvFile(file) {
+      if (!file) return;
+      const text = await file.text();
+      const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+      if (lines.length < 2) {
+        showToast('Barista CSV file appears empty.', true);
+        return;
+      }
+
+      const headers = parseCsvLine(lines[0]).map((h) => h.toLowerCase().replace(/[^a-z0-9]/g, ''));
+      const firstIdx = headers.findIndex((h) => ['firstname', 'first', 'fname'].includes(h));
+      const lastIdx = headers.findIndex((h) => ['lastname', 'last', 'lname', 'surname'].includes(h));
+      const fullIdx = headers.findIndex((h) => ['fullname', 'name', 'barista', 'student'].includes(h));
+      const emailIdx = headers.findIndex((h) => h.includes('email') || h.includes('mail'));
+
+      if (firstIdx === -1 && fullIdx === -1) {
+        showToast('CSV must include first_name (or name) and email columns.', true);
+        return;
+      }
+
+      const rows = [];
+      for (let i = 1; i < lines.length; i++) {
+        const cols = parseCsvLine(lines[i]);
+        let firstName = firstIdx !== -1 ? (cols[firstIdx] || '').trim() : '';
+        let lastName = lastIdx !== -1 ? (cols[lastIdx] || '').trim() : '';
+
+        if (!firstName && fullIdx !== -1) {
+          const parts = (cols[fullIdx] || '').trim().split(/\s+/);
+          firstName = parts[0] || '';
+          lastName = parts.slice(1).join(' ');
+        }
+
+        const email = emailIdx !== -1 ? (cols[emailIdx] || '').trim().toLowerCase() : '';
+        if (firstName || email) {
+          rows.push({ first_name: firstName, last_name: lastName, email });
+        }
+      }
+
+      if (rows.length === 0) {
+        showToast('No valid barista rows found in CSV.', true);
+        return;
+      }
+
+      state.parsedBaristas = rows;
+      document.getElementById('baristaPreviewSummary').textContent = `${file.name} — ${rows.length} barista(s) ready to import`;
+      document.getElementById('baristaPreviewBody').innerHTML = rows
+        .slice(0, 40)
+        .map(
+          (r) => `
+            <tr>
+              <td>${escapeHtml(r.first_name)}</td>
+              <td>${escapeHtml(r.last_name)}</td>
+              <td>${escapeHtml(r.email || '—')}</td>
+            </tr>
+          `
+        )
+        .join('');
+      document.getElementById('baristaPreviewBox').style.display = 'block';
+    }
+
+    async function uploadBaristaRoster() {
+      if (!state.parsedBaristas || state.parsedBaristas.length === 0) return;
+      const email = document.getElementById('baristaAdminEmail').value.trim();
+      const password = document.getElementById('baristaAdminPass').value;
+      const semester = document.getElementById('semesterLabelInput').value.trim();
+      const deactivateOthers = document.getElementById('deactivateFormerBaristas').checked;
+
+      if (!email || !password) {
+        showToast('Enter advisor PocketBase email and password first.', true);
+        return;
+      }
+
+      const btn = document.getElementById('submitBaristasBtn');
+      btn.disabled = true;
+      btn.textContent = 'Saving Roster...';
+
+      try {
+        const authRes = await fetch(`${PB_BASE}/api/collections/_superusers/auth-with-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identity: email, password })
+        });
+        if (!authRes.ok) throw new Error('Superuser authentication failed.');
+        const { token } = await authRes.json();
+
+        const res = await fetch(`${PB_BASE}/api/cosmic/import-baristas`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token
+          },
+          body: JSON.stringify({
+            semester,
+            deactivateOthers,
+            rows: state.parsedBaristas
+          })
+        });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || 'Barista roster import failed.');
+
+        state.parsedBaristas = null;
+        document.getElementById('baristaPreviewBox').style.display = 'none';
+        document.getElementById('baristaFileInput').value = '';
+        await loadAllData();
+        showToast(
+          `Roster updated: ${result.created} added, ${result.updated} updated` +
+            (result.deactivated ? `, ${result.deactivated} archived.` : '.')
+        );
+      } catch (err) {
+        showToast(err.message || 'Barista roster upload failed.', true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Semester Roster';
+      }
+    }
+
+    function renderActiveRosterTable() {
+      const countEl = document.getElementById('activeRosterCount');
+      const tbody = document.getElementById('activeRosterBody');
+      if (!countEl || !tbody) return;
+
+      countEl.textContent = String(state.baristas.length);
+      const q = (document.getElementById('rosterSearchInput')?.value || '').trim().toLowerCase();
+      const filtered = state.baristas.filter((b) => {
+        if (!q) return true;
+        return `${b.full_name} ${b.email || ''} ${b.semester || ''}`.toLowerCase().includes(q);
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3">No active baristas loaded yet. Upload your semester CSV above.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered
+        .map(
+          (b) => `
+            <tr>
+              <td><strong>${escapeHtml(b.full_name)}</strong></td>
+              <td>${escapeHtml(b.email || '—')}</td>
+              <td>${escapeHtml(b.semester || 'Current')}</td>
+            </tr>
+          `
+        )
+        .join('');
+    }
+
+    // -------------------------------------------------------------------------
     // Printable QR Station Signs
     // -------------------------------------------------------------------------
     function renderQrCards() {
@@ -1665,11 +2371,12 @@
         const logs = await pbList('count_logs', 'sort=-created');
         const countsByUser = {};
         for (const row of logs) {
-          const user = (row.counted_by || 'cafe-ipad').trim();
-          if (!countsByUser[user]) {
-            countsByUser[user] = { count: 0, latest: row.created };
+          const rawUser = (row.counted_by || 'cafe-ipad').trim();
+          const canonicalUser = resolveCanonicalBaristaName(rawUser);
+          if (!countsByUser[canonicalUser]) {
+            countsByUser[canonicalUser] = { count: 0, latest: row.created };
           }
-          countsByUser[user].count += 1;
+          countsByUser[canonicalUser].count += 1;
         }
 
         const ranked = Object.entries(countsByUser).sort((a, b) => b[1].count - a[1].count);
@@ -1704,12 +2411,19 @@
         .replace(/"/g, '&quot;');
     }
 
-    // Initialize saved barista name & environment badge
+    // Initialize saved barista profile, semester default & environment badge
     (function init() {
-      const savedName = localStorage.getItem('cosmic_barista_name');
-      if (savedName) {
-        document.getElementById('baristaNameInput').value = savedName;
-      }
+      restoreBaristaIdentity();
+
+      const savedAdminEmail = sessionStorage.getItem('cosmic_admin_email');
+      const savedAdminPass = sessionStorage.getItem('cosmic_admin_pass');
+      if (savedAdminEmail) syncAdminCredentials('email', savedAdminEmail);
+      if (savedAdminPass) syncAdminCredentials('pass', savedAdminPass);
+
+      const now = new Date();
+      const defaultSem = `${now.getMonth() >= 7 ? 'Fall' : 'Spring'} ${now.getFullYear()}`;
+      const semInput = document.getElementById('semesterLabelInput');
+      if (semInput && !semInput.value) semInput.value = defaultSem;
 
       const host = window.location.hostname;
       const badge = document.getElementById('envBadge');
