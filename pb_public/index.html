@@ -3,464 +3,1725 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cosmic Cafe Inventory</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <title>Cosmic Cafe — Inventory &amp; Operations | Mason City Schools</title>
+  <!-- Mason City Schools Brand Typography: Hind (Primary) + Satisfy (Accent) + Verdana fallback -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;500;600;700&family=Satisfy&display=swap" rel="stylesheet" />
   <style>
+    /* ==========================================================================
+       Cosmic Cafe + Mason City Schools Official Design Tokens
+       - MCS Brand Colors:
+           Comet Deep Green:   #008A00
+           Comet Bright Green: #4CBB17
+           Comet Sky Blue:     #1FB7E5
+           Comet Slate Navy:   #2A3D4C
+           Neutral Grey:       #888787
+       - Cosmic Cafe Logo Palette (cosmic-cafe.png):
+           Cosmic Obsidian:    #0B0E11
+           Comet Mint Trail:   #97D0AE
+           Chalk White:        #FFFFFF
+       - Typography:
+           Primary: 'Hind', Verdana, sans-serif
+           Accent:  'Satisfy', cursive
+       ========================================================================== */
+    :root {
+      --mcs-green-deep: #008A00;
+      --mcs-green-bright: #4CBB17;
+      --mcs-blue: #1FB7E5;
+      --mcs-navy: #2A3D4C;
+      --mcs-grey: #888787;
+
+      --cosmic-black: #0B0E11;
+      --cosmic-surface: #141A20;
+      --cosmic-mint: #97D0AE;
+
+      --bg-page: #F4F6F8;
+      --bg-card: #FFFFFF;
+      --bg-subtle: #EEF2F5;
+      --border-light: #D8E0E6;
+      --border-strong: #BCC8D2;
+
+      --text-primary: #2A3D4C;
+      --text-secondary: #526575;
+      --text-muted: #768591;
+
+      --status-danger: #C62828;
+      --status-danger-bg: #FDECEA;
+      --status-warn: #B26A00;
+      --status-warn-bg: #FFF6E5;
+      --status-ok: #008A00;
+      --status-ok-bg: #E8F6E8;
+
+      --font-primary: 'Hind', Verdana, -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-accent: 'Satisfy', Georgia, serif;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --shadow-card: 0 1px 3px rgba(42, 61, 76, 0.08), 0 1px 2px rgba(42, 61, 76, 0.04);
+      --shadow-dropdown: 0 10px 25px rgba(11, 14, 17, 0.22), 0 2px 6px rgba(11, 14, 17, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 5.5rem;
+    }
+
+    /* --------------------------------------------------------------------------
+       Top Navigation Bar (Cosmic Cafe Black + Comet Green Accent Stripe)
+       -------------------------------------------------------------------------- */
+    .topbar {
+      background-color: var(--cosmic-black);
+      color: #FFFFFF;
+      border-bottom: 4px solid var(--mcs-green-deep);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(11, 14, 17, 0.28);
+    }
+
+    .topbar-accent-rule {
+      height: 3px;
+      background: linear-gradient(90deg, var(--mcs-green-deep) 0%, var(--mcs-green-bright) 50%, var(--mcs-blue) 100%);
+    }
+
+    .topbar-inner {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0.65rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      text-decoration: none;
+      color: #FFFFFF;
+    }
+
+    .brand-logo {
+      width: 50px;
+      height: 50px;
+      flex-shrink: 0;
+      display: block;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+    }
+
+    .brand-title-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #FFFFFF;
+    }
+
+    .env-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.12rem 0.45rem;
+      border-radius: 4px;
+      background-color: var(--mcs-blue);
+      color: var(--cosmic-black);
+    }
+
+    .env-badge.prod {
+      background-color: var(--cosmic-mint);
+      color: var(--cosmic-black);
+    }
+
+    .brand-tagline {
+      font-family: var(--font-accent);
+      font-size: 0.98rem;
+      color: var(--cosmic-mint);
+      letter-spacing: 0.01em;
+    }
+
+    /* Primary Nav + Admin Dropdown */
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .nav-btn {
+      appearance: none;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #E2E8EE;
+      font-family: var(--font-primary);
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.5rem 0.9rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .nav-btn:hover {
+      background-color: var(--cosmic-surface);
+      color: #FFFFFF;
+    }
+
+    .nav-btn.active {
+      background-color: var(--mcs-green-deep);
+      color: #FFFFFF;
+      border-color: var(--mcs-green-bright);
+    }
+
+    .nav-dropdown {
+      position: relative;
+    }
+
+    .caret {
+      font-size: 0.72rem;
+      transition: transform 0.15s ease;
+    }
+
+    .nav-dropdown.open .caret {
+      transform: rotate(180deg);
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 0.45rem);
+      min-width: 225px;
+      background-color: #FFFFFF;
+      border: 1px solid var(--border-light);
+      border-top: 3px solid var(--mcs-blue);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-dropdown);
+      padding: 0.4rem;
+      display: none;
+      z-index: 200;
+    }
+
+    .nav-dropdown.open .dropdown-menu {
+      display: block;
+    }
+
+    .dropdown-header {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--mcs-grey);
+      padding: 0.35rem 0.7rem 0.25rem;
+    }
+
+    .dropdown-item {
+      width: 100%;
+      appearance: none;
+      border: none;
+      background: transparent;
+      text-align: left;
+      font-family: var(--font-primary);
+      color: var(--mcs-navy);
+      padding: 0.55rem 0.75rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.05rem;
+      transition: background-color 0.12s ease;
+    }
+
+    .dropdown-item:hover {
+      background-color: var(--bg-subtle);
+    }
+
+    .dropdown-item.active {
+      background-color: var(--status-ok-bg);
+      color: var(--mcs-green-deep);
+    }
+
+    .dropdown-item-title {
+      font-size: 0.94rem;
+      font-weight: 700;
+    }
+
+    .dropdown-item-desc {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    /* --------------------------------------------------------------------------
+       Main Layout Container
+       -------------------------------------------------------------------------- */
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem;
+    }
+
+    .view-section {
+      display: none;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border-light);
+    }
+
+    .section-title {
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: var(--mcs-navy);
+      line-height: 1.2;
+    }
+
+    .section-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-top: 0.2rem;
+    }
+
+    /* --------------------------------------------------------------------------
+       Cards, Controls, Pills & Buttons
+       -------------------------------------------------------------------------- */
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-card);
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .rule-callout {
+      background-color: #FFFFFF;
+      border: 1px solid var(--border-light);
+      border-left: 5px solid var(--mcs-blue);
+      border-radius: var(--radius-sm);
+      padding: 0.8rem 1rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-size: 0.92rem;
+      color: var(--mcs-navy);
+    }
+
+    .rule-callout strong {
+      color: var(--mcs-navy);
+      font-weight: 700;
+    }
+
+    .barista-bar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.75rem;
+      align-items: center;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 0.9rem 1.1rem;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .field-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    select {
+      font-family: var(--font-primary);
+      font-size: 0.98rem;
+      color: var(--mcs-navy);
+      background-color: #FFFFFF;
+      border: 1.5px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 0.75rem;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--mcs-blue);
+      box-shadow: 0 0 0 3px rgba(31, 183, 229, 0.2);
+    }
+
+    /* Zone Selector Strip */
+    .zone-strip {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.25rem;
+      scrollbar-width: thin;
+    }
+
+    .zone-pill {
+      appearance: none;
+      border: 1.5px solid var(--border-strong);
+      background-color: #FFFFFF;
+      color: var(--mcs-navy);
+      font-family: var(--font-primary);
+      font-size: 0.92rem;
+      font-weight: 600;
+      padding: 0.5rem 0.95rem;
+      border-radius: 999px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+
+    .zone-pill:hover {
+      border-color: var(--mcs-green-deep);
+      color: var(--mcs-green-deep);
+    }
+
+    .zone-pill.active {
+      background-color: var(--mcs-navy);
+      border-color: var(--mcs-navy);
+      color: #FFFFFF;
+    }
+
+    /* Barista Counting Cards */
+    .count-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 0.9rem;
+    }
+
+    .item-count-card {
+      background-color: #FFFFFF;
+      border: 1.5px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.1rem;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.85rem;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .item-count-card.modified {
+      border-color: var(--mcs-blue);
+      background-color: #F4FBFE;
+    }
+
+    .item-meta-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .item-name {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--mcs-navy);
+      line-height: 1.25;
+    }
+
+    .unit-tag {
+      display: inline-block;
+      margin-top: 0.25rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--mcs-green-deep);
+      background-color: var(--status-ok-bg);
+      padding: 0.12rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .prev-count-note {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .stepper-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+    }
+
+    .stepper-btn {
+      appearance: none;
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border-strong);
+      background-color: var(--bg-subtle);
+      color: var(--mcs-navy);
+      font-family: var(--font-primary);
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: background-color 0.12s ease, border-color 0.12s ease;
+    }
+
+    .stepper-btn:hover {
+      background-color: #E1E8EE;
+      border-color: var(--mcs-navy);
+    }
+
+    .stepper-btn.plus {
+      background-color: var(--status-ok-bg);
+      border-color: var(--mcs-green-deep);
+      color: var(--mcs-green-deep);
+    }
+
+    .stepper-btn.plus:hover {
+      background-color: #D4EED4;
+    }
+
+    .stepper-input {
+      flex: 1;
+      height: 48px;
+      text-align: center;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--mcs-navy);
+    }
+
+    /* Sticky Submit Bar */
+    .save-dock {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #FFFFFF;
+      border-top: 2px solid var(--border-light);
+      box-shadow: 0 -4px 16px rgba(42, 61, 76, 0.1);
+      padding: 0.75rem 1.25rem;
+      z-index: 90;
+    }
+
+    .save-dock-inner {
+      max-width: 1140px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .save-status-text {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .btn-primary {
+      appearance: none;
+      border: none;
+      background-color: var(--mcs-green-deep);
+      color: #FFFFFF;
+      font-family: var(--font-primary);
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 0.65rem 1.4rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: #007000;
+    }
+
+    .btn-primary:disabled {
+      background-color: var(--mcs-grey);
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      appearance: none;
+      border: 1.5px solid var(--mcs-navy);
+      background-color: #FFFFFF;
+      color: var(--mcs-navy);
+      font-family: var(--font-primary);
+      font-size: 0.92rem;
+      font-weight: 700;
+      padding: 0.55rem 1.1rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--bg-subtle);
+    }
+
+    /* --------------------------------------------------------------------------
+       Live Stock Table & KPI Strip
+       -------------------------------------------------------------------------- */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.9rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .kpi-card {
+      background-color: #FFFFFF;
+      border: 1px solid var(--border-light);
+      border-top: 4px solid var(--mcs-navy);
+      border-radius: var(--radius-md);
+      padding: 0.95rem 1.1rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-card.danger { border-top-color: var(--status-danger); }
+    .kpi-card.warn { border-top-color: #D9822B; }
+    .kpi-card.ok { border-top-color: var(--mcs-green-deep); }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+    }
+
+    .kpi-value {
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: var(--mcs-navy);
+      line-height: 1.15;
+      margin-top: 0.2rem;
+    }
+
+    .filter-toolbar {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .filter-toolbar input[type="text"] {
+      min-width: 240px;
+      flex: 1;
+    }
+
+    .table-wrap {
+      background-color: #FFFFFF;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-card);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    th {
+      background-color: var(--mcs-navy);
+      color: #FFFFFF;
+      text-align: left;
+      font-weight: 700;
+      padding: 0.75rem 0.9rem;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: middle;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #FAFBFD;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.18rem 0.55rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge-zero { background-color: var(--status-danger-bg); color: var(--status-danger); }
+    .badge-low { background-color: var(--status-warn-bg); color: var(--status-warn); }
+    .badge-ok { background-color: var(--status-ok-bg); color: var(--status-ok); }
+    .badge-inactive { background-color: var(--bg-subtle); color: var(--mcs-grey); }
+
+    /* --------------------------------------------------------------------------
+       DripOS CSV Dropzone
+       -------------------------------------------------------------------------- */
+    .dropzone {
+      border: 2px dashed var(--mcs-blue);
+      background-color: #F6FBFD;
+      border-radius: var(--radius-md);
+      padding: 2rem 1.25rem;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .dropzone:hover,
+    .dropzone.dragover {
+      background-color: #E6F6FC;
+      border-color: var(--mcs-green-deep);
+    }
+
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    /* --------------------------------------------------------------------------
+       Printable QR Station Cards
+       -------------------------------------------------------------------------- */
+    .qr-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 1.1rem;
+    }
+
+    .qr-card {
+      background-color: #FFFFFF;
+      border: 2px solid var(--mcs-navy);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      text-align: center;
+      box-shadow: var(--shadow-card);
+      break-inside: avoid;
+    }
+
+    .qr-card-banner {
+      background-color: var(--cosmic-black);
+      color: #FFFFFF;
+      padding: 0.65rem 0.75rem;
+      border-bottom: 4px solid var(--mcs-green-deep);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .qr-card-banner span {
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+    }
+
+    .qr-card-body {
+      padding: 1.1rem 1rem;
+    }
+
+    .qr-zone-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--mcs-navy);
+    }
+
+    .qr-zone-desc {
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      margin: 0.25rem 0 0.85rem;
+    }
+
+    .qr-img {
+      width: 176px;
+      height: 176px;
+      border: 1px solid var(--border-light);
+      padding: 6px;
+      border-radius: var(--radius-sm);
+      background: #FFFFFF;
+    }
+
+    .qr-url {
+      margin-top: 0.6rem;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      word-break: break-all;
+    }
+
+    /* Toast Banner */
+    .toast {
+      position: fixed;
+      top: 5.25rem;
+      right: 1.25rem;
+      background-color: var(--mcs-navy);
+      color: #FFFFFF;
+      border-left: 5px solid var(--mcs-green-bright);
+      padding: 0.8rem 1.1rem;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-dropdown);
+      font-weight: 600;
+      font-size: 0.94rem;
+      z-index: 300;
+      display: none;
+      max-width: 380px;
+    }
+
+    .toast.error {
+      border-left-color: #FF5252;
+    }
+
+    @media (max-width: 640px) {
+      .barista-bar {
+        grid-template-columns: 1fr;
+      }
+      .brand-tagline {
+        display: none;
+      }
+    }
+
     @media print {
-      .no-print { display: none !important; }
-      .print-grid { display: grid !important; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-      .qr-card { break-inside: avoid; border: 2px solid #1e293b !important; }
+      body {
+        background: #FFFFFF;
+        padding: 0;
+      }
+      .topbar,
+      .save-dock,
+      .no-print {
+        display: none !important;
+      }
+      .view-section {
+        display: none !important;
+      }
+      #tab-qr {
+        display: block !important;
+      }
+      .qr-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+      }
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
-
-  <!-- Top Navigation -->
-  <header class="no-print bg-slate-900 border-b border-slate-800 sticky top-0 z-30">
-    <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-2.5">
-        <span class="text-2xl">☄️☕</span>
-        <div>
-          <h1 class="font-bold text-lg tracking-tight text-white">Cosmic Cafe Inventory</h1>
-          <p id="env-badge" class="text-xs text-slate-400">Connecting to PocketBase...</p>
+<body>
+  <!-- ========================================================================
+       Top Header & Navigation (with clustered 'Admin' Dropdown)
+       ======================================================================== -->
+  <header class="topbar">
+    <div class="topbar-accent-rule"></div>
+    <div class="topbar-inner">
+      <a href="#count" class="brand-lockup" onclick="switchTab('count'); return false;">
+        <!-- Custom SVG Emblem matched to cosmic-cafe.png (tilted cup, rising steam, #97D0AE comet trail) -->
+        <svg class="brand-logo" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Cosmic Cafe Logo">
+          <rect width="120" height="120" rx="18" fill="#0B0E11" />
+          <!-- Steam curves above tilted cup -->
+          <path d="M31 63C23 61 20 54 27 51C34 48 39 53 34 45C27 36 12 33 14 29C16 25 36 33 47 38C56 42 57 34 51 27C46 21 51 18 62 23C71 27 76 31 79 34" stroke="#FFFFFF" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Saucer -->
+          <path d="M51 94C46 98 49 104 64 103C83 102 104 91 107 83C109 77 101 74 91 75" stroke="#FFFFFF" stroke-width="3.6" stroke-linecap="round" />
+          <!-- Tilted coffee bowl -->
+          <path d="M27 68L88 33C97 53 92 78 73 89C54 100 35 89 27 68Z" fill="#0B0E11" stroke="#FFFFFF" stroke-width="3.8" stroke-linejoin="round" />
+          <!-- Cup text -->
+          <text x="58" y="69" fill="#FFFFFF" font-family="Hind, Verdana, sans-serif" font-size="8.2" font-weight="700" letter-spacing="1.2" text-anchor="middle" transform="rotate(-29 58 69)">COSMIC CAFE</text>
+          <!-- Mint comet orbital swoosh (#97D0AE) -->
+          <path d="M94 41C104 40 107 47 96 59C83 73 56 86 35 92" stroke="#97D0AE" stroke-width="4.2" stroke-linecap="round" />
+          <!-- 5-point mint star at lower-left tip -->
+          <polygon points="32,86 34,91 39,91 35,94 36.5,99 32,96 27.5,99 29,94 25,91 30,91" fill="#97D0AE" />
+        </svg>
+        <div class="brand-text">
+          <div class="brand-title-row">
+            <span class="brand-title">Cosmic Cafe</span>
+            <span id="envBadge" class="env-badge">Mason Comets</span>
+          </div>
+          <span class="brand-tagline">Inventory &amp; Cafe Operations</span>
         </div>
-      </div>
+      </a>
 
-      <nav class="flex flex-wrap gap-1.5 text-sm">
-        <button onclick="switchTab('count')" id="nav-count" class="tab-btn px-3 py-1.5 rounded-lg font-medium bg-indigo-600 text-white">Zone Count</button>
-        <button onclick="switchTab('stock')" id="nav-stock" class="tab-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800">Live Stock</button>
-        <button onclick="switchTab('leaders')" id="nav-leaders" class="tab-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800">Leaderboard</button>
-        <button onclick="switchTab('dripos')" id="nav-dripos" class="tab-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800">DripOS CSV</button>
-        <button onclick="switchTab('qr')" id="nav-qr" class="tab-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800">Print QRs</button>
+      <nav class="nav-bar" aria-label="Primary Navigation">
+        <button type="button" class="nav-btn active" data-tab="count" onclick="switchTab('count')">
+          Count Zone
+        </button>
+
+        <button type="button" class="nav-btn" data-tab="leaderboard" onclick="switchTab('leaderboard')">
+          Leaderboard
+        </button>
+
+        <!-- Clustered Admin Dropdown: Live Stock, DripOS CSV, Print QR -->
+        <div class="nav-dropdown" id="adminDropdown">
+          <button
+            type="button"
+            class="nav-btn"
+            id="adminDropdownBtn"
+            aria-haspopup="true"
+            aria-expanded="false"
+            onclick="toggleAdminDropdown(event)"
+          >
+            Admin <span class="caret" aria-hidden="true">&#9662;</span>
+          </button>
+          <div class="dropdown-menu" role="menu" aria-labelledby="adminDropdownBtn">
+            <div class="dropdown-header">Advisor &amp; Manager Tools</div>
+            <button type="button" class="dropdown-item" role="menuitem" data-tab="stock" onclick="selectAdminTab('stock')">
+              <span class="dropdown-item-title">Live Stock</span>
+              <span class="dropdown-item-desc">All 84 items, par levels &amp; reorder status</span>
+            </button>
+            <button type="button" class="dropdown-item" role="menuitem" data-tab="dripos" onclick="selectAdminTab('dripos')">
+              <span class="dropdown-item-title">DripOS CSV</span>
+              <span class="dropdown-item-desc">Import POS product &amp; modifier sales</span>
+            </button>
+            <button type="button" class="dropdown-item" role="menuitem" data-tab="qr" onclick="selectAdminTab('qr')">
+              <span class="dropdown-item-title">Print QR</span>
+              <span class="dropdown-item-desc">Printable QR station labels for 8 zones</span>
+            </button>
+          </div>
+        </div>
       </nav>
     </div>
   </header>
 
-  <main class="max-w-5xl mx-auto px-4 py-6">
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-    <!-- TAB 1: BARISTA ZONE COUNTER -->
-    <section id="tab-count" class="space-y-5">
-      <div class="bg-amber-950/50 border border-amber-700/60 rounded-xl p-4 text-sm text-amber-200">
-        <strong class="font-semibold text-amber-100">Counting Rule:</strong> Count <u>whole, unopened units only</u> in the unit shown in parentheses. Always round down—ignore open or partially used containers.
-      </div>
-
-      <div class="grid sm:grid-cols-2 gap-4 bg-slate-900 p-4 rounded-xl border border-slate-800">
+  <main class="container">
+    <!-- ======================================================================
+         1. BARISTA ZONE COUNT SECTION
+         ====================================================================== -->
+    <section id="tab-count" class="view-section active">
+      <div class="section-header">
         <div>
-          <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">1. Storage Zone (or scan QR)</label>
-          <select id="zone-select" onchange="selectZone(this.value)" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-white font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="">Loading zones...</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs uppercase tracking-wider text-slate-400 mb-1">2. Barista Name / Initials</label>
-          <input id="barista-name" type="text" placeholder="e.g., Maya R." oninput="localStorage.setItem('cosmic_barista', this.value)"
-            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <h1 class="section-title" id="activeZoneHeading">Station Inventory Count</h1>
+          <p class="section-subtitle" id="activeZoneSubheading">Select a storage zone below or scan a station QR code.</p>
         </div>
       </div>
 
-      <div id="zone-header" class="flex items-center justify-between">
+      <div class="rule-callout">
         <div>
-          <h2 id="zone-title" class="text-xl font-bold text-white">Select a Zone</h2>
-          <p id="zone-desc" class="text-sm text-slate-400"></p>
+          <strong>Counting Standard:</strong> Count <u>unopened, whole units only</u> matching the label in green. Always round down—ignore open sleeves, partial bottles, or opened milk jugs.
         </div>
-        <span id="zone-item-count" class="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full">0 items</span>
       </div>
 
-      <div id="zone-items-list" class="space-y-3"></div>
+      <div class="barista-bar">
+        <div class="field-group">
+          <label class="field-label" for="baristaNameInput">Barista Name or Initials (for Leaderboard)</label>
+          <input type="text" id="baristaNameInput" placeholder="e.g., Jordan M. or jm2027" autocomplete="name" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="zoneSelectMobile">Quick Jump Zone</label>
+          <select id="zoneSelectMobile" onchange="selectZone(this.value)"></select>
+        </div>
+      </div>
 
-      <div class="sticky bottom-4 pt-2">
-        <button id="submit-count-btn" onclick="submitZoneCounts()"
-          class="w-full bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-emerald-950/60 transition flex items-center justify-center gap-2 text-base">
-          <span>Submit Zone Inventory</span>
-        </button>
-        <p id="submit-status" class="text-center text-sm mt-2 text-emerald-400 hidden"></p>
+      <div class="zone-strip" id="zonePills" role="tablist" aria-label="Storage Zones"></div>
+
+      <div id="countGrid" class="count-grid"></div>
+
+      <div class="save-dock no-print">
+        <div class="save-dock-inner">
+          <span class="save-status-text" id="saveStatusText">Ready to record zone counts.</span>
+          <button type="button" class="btn-primary" id="saveZoneBtn" onclick="saveZoneCounts()">
+            Save Zone Count
+          </button>
+        </div>
       </div>
     </section>
 
-    <!-- TAB 2: LIVE STOCK & REORDER OVERVIEW -->
-    <section id="tab-stock" class="hidden space-y-4">
-      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900 p-4 rounded-xl border border-slate-800">
-        <input id="stock-search" type="text" placeholder="Search items, categories, vendors..." oninput="renderStockTable()"
-          class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white w-full sm:w-72" />
-        <div class="flex items-center gap-4 text-sm">
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input id="filter-low" type="checkbox" onchange="renderStockTable()" class="rounded bg-slate-800 border-slate-600" />
-            <span>Low / Out Only</span>
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input id="filter-inactive" type="checkbox" onchange="renderStockTable()" class="rounded bg-slate-800 border-slate-600" />
-            <span>Show Inactive Campaign Items</span>
-          </label>
+    <!-- ======================================================================
+         2. LIVE STOCK SECTION (Admin Dropdown)
+         ====================================================================== -->
+    <section id="tab-stock" class="view-section">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Live Inventory &amp; Par Levels</h1>
+          <p class="section-subtitle">Real-time cross-zone totals, DripOS estimated balances, and vendor reorder thresholds.</p>
         </div>
+        <button type="button" class="btn-secondary" onclick="loadAllData()">Refresh Data</button>
       </div>
 
-      <div class="overflow-x-auto bg-slate-900 rounded-xl border border-slate-800">
-        <table class="w-full text-left text-sm">
-          <thead class="bg-slate-800/80 text-slate-300 uppercase text-xs">
+      <div class="kpi-grid" id="stockKpis"></div>
+
+      <div class="filter-toolbar">
+        <input type="text" id="stockSearchInput" placeholder="Search item, category, or vendor..." oninput="renderStockTable()" />
+        <button type="button" class="zone-pill active" data-stock-filter="all" onclick="setStockFilter('all', this)">All Active</button>
+        <button type="button" class="zone-pill" data-stock-filter="zero" onclick="setStockFilter('zero', this)">Out of Stock (0)</button>
+        <button type="button" class="zone-pill" data-stock-filter="low" onclick="setStockFilter('low', this)">Reorder Needed</button>
+        <button type="button" class="zone-pill" data-stock-filter="inactive" onclick="setStockFilter('inactive', this)">Seasonal / Inactive</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
             <tr>
-              <th class="px-4 py-3">Item</th>
-              <th class="px-4 py-3">Category</th>
-              <th class="px-4 py-3 text-right">Physical</th>
-              <th class="px-4 py-3 text-right">POS Est.</th>
-              <th class="px-4 py-3 text-right">Par / Reorder</th>
-              <th class="px-4 py-3">Status</th>
+              <th>Item</th>
+              <th>Category</th>
+              <th>Storage Zones</th>
+              <th>On Hand</th>
+              <th>POS Est.</th>
+              <th>Reorder / Par</th>
+              <th>Status</th>
+              <th>Last Counted</th>
             </tr>
           </thead>
-          <tbody id="stock-tbody" class="divide-y divide-slate-800"></tbody>
+          <tbody id="stockTableBody"></tbody>
         </table>
       </div>
     </section>
 
-    <!-- TAB 3: BARISTA LEADERBOARD -->
-    <section id="tab-leaders" class="hidden space-y-4">
-      <div class="bg-slate-900 p-5 rounded-xl border border-slate-800">
-        <h2 class="text-lg font-bold text-white mb-1">Top Inventory Counters</h2>
-        <p class="text-sm text-slate-400 mb-4">Tracks recent item updates logged by baristas for advisor recognition and rewards.</p>
-        <div id="leaderboard-list" class="space-y-2"></div>
-      </div>
-    </section>
-
-    <!-- TAB 4: DRIPOS CSV IMPORTER (ADVISOR AUTH) -->
-    <section id="tab-dripos" class="hidden space-y-4">
-      <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 space-y-4">
+    <!-- ======================================================================
+         3. DRIPOS CSV IMPORTER SECTION (Admin Dropdown)
+         ====================================================================== -->
+    <section id="tab-dripos" class="view-section">
+      <div class="section-header">
         <div>
-          <h2 class="text-lg font-bold text-white">DripOS POS CSV Importer</h2>
-          <p class="text-sm text-slate-400">Upload DripOS <strong>All Product Sales</strong> or <strong>Modifier Sales</strong> CSV exports to update estimated stock between physical counts. Duplicate uploads are automatically blocked via SHA-256 batch hashing.</p>
+          <h1 class="section-title">DripOS CSV Sales Ingestion</h1>
+          <p class="section-subtitle">Upload DripOS Product Sales or Modifier Sales CSVs to deduct mapped recipe ingredients between physical counts.</p>
         </div>
+      </div>
 
-        <div class="grid sm:grid-cols-2 gap-3 bg-slate-950/60 p-4 rounded-lg border border-slate-800">
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">Advisor Superuser Email</label>
-            <input id="admin-email" type="email" placeholder="advisor@school.org" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white" />
+      <div class="card">
+        <div class="form-row-2">
+          <div class="field-group">
+            <label class="field-label" for="adminEmailInput">Advisor PocketBase Email</label>
+            <input type="email" id="adminEmailInput" placeholder="stemplek@masonohioschools.com" />
           </div>
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">Superuser Password</label>
-            <input id="admin-pass" type="password" placeholder="••••••••" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white" />
+          <div class="field-group">
+            <label class="field-label" for="adminPassInput">Advisor Password</label>
+            <input type="password" id="adminPassInput" placeholder="Enter PocketBase superuser password" />
           </div>
         </div>
 
-        <div>
-          <label class="block text-xs text-slate-400 mb-1">Select DripOS CSV File</label>
-          <input id="dripos-file" type="file" accept=".csv" class="block w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-500" />
+        <div class="dropzone" id="csvDropzone" onclick="document.getElementById('csvFileInput').click()">
+          <p style="font-size:1.05rem; font-weight:700; color:var(--mcs-navy);">Drop a DripOS CSV report here or click to browse</p>
+          <p style="font-size:0.88rem; color:var(--text-secondary); margin-top:0.25rem;">
+            Accepts DripOS Product Sales &amp; Modifier Sales exports. Duplicate files are automatically blocked via SHA-256 batch hashing.
+          </p>
+          <input type="file" id="csvFileInput" accept=".csv,text/csv" style="display:none" onchange="handleCsvFile(this.files[0])" />
         </div>
 
-        <button onclick="uploadDriposCsv()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-5 py-2.5 rounded-lg text-sm">
-          Process & Deduct POS Sales
-        </button>
-        <pre id="dripos-result" class="text-xs bg-slate-950 p-3 rounded-lg border border-slate-800 text-slate-300 hidden overflow-x-auto"></pre>
+        <div id="csvPreviewBox" style="display:none; margin-top:1.1rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:0.75rem;">
+            <strong id="csvPreviewSummary">Parsed 0 rows</strong>
+            <button type="button" class="btn-primary" id="submitCsvBtn" onclick="uploadParsedCsv()">Apply POS Deductions</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Detected DripOS SKU / Name</th><th>Quantity Sold</th></tr>
+              </thead>
+              <tbody id="csvPreviewBody"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- TAB 5: PRINTABLE QR STATION SIGNS -->
-    <section id="tab-qr" class="hidden space-y-4">
-      <div class="no-print flex items-center justify-between bg-slate-900 p-4 rounded-xl border border-slate-800">
+    <!-- ======================================================================
+         4. PRINTABLE QR STATION LABELS SECTION (Admin Dropdown)
+         ====================================================================== -->
+    <section id="tab-qr" class="view-section">
+      <div class="section-header">
         <div>
-          <h2 class="text-lg font-bold text-white">Printable Storage Zone QR Signs</h2>
-          <p class="text-sm text-slate-400">Print and tape each card inside its matching fridge, cabinet, or shelf door.</p>
+          <h1 class="section-title">Printable Station QR Codes</h1>
+          <p class="section-subtitle">Laminate and post each sign inside its matching fridge, cabinet, or stockroom shelf.</p>
         </div>
-        <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg text-sm">
-          Print QR Sheet
-        </button>
+        <button type="button" class="btn-primary no-print" onclick="window.print()">Print All 8 Station Signs</button>
       </div>
-      <div id="qr-grid" class="print-grid grid sm:grid-cols-2 gap-4"></div>
+
+      <div class="qr-grid" id="qrGrid"></div>
     </section>
 
+    <!-- ======================================================================
+         5. BARISTA LEADERBOARD SECTION
+         ====================================================================== -->
+    <section id="tab-leaderboard" class="view-section">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Barista Inventory Leaderboard</h1>
+          <p class="section-subtitle">Recognizing Cosmic Cafe team members who keep station counts accurate and up to date.</p>
+        </div>
+        <button type="button" class="btn-secondary" onclick="loadLeaderboard()">Refresh Standings</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Team Member</th>
+              <th>Item Counts Logged</th>
+              <th>Most Recent Activity</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody"></tbody>
+        </table>
+      </div>
+    </section>
   </main>
 
   <script>
-    const PB_URL = window.location.origin;
-    let state = {
+    // =========================================================================
+    // Cosmic Cafe Frontend Controller (Zero external JS dependencies)
+    // =========================================================================
+    const PB_BASE = window.location.origin;
+
+    const state = {
       zones: [],
       items: [],
-      zoneCounts: new Map(), // key: `${itemId}--${zoneId}` -> qty
-      draftCounts: new Map(),
-      currentZone: ""
+      zoneCounts: [],
+      selectedZoneId: null,
+      draftQuantities: {}, // itemId -> number
+      stockFilter: 'all',
+      parsedCsv: null
     };
 
-    async function pbFetch(path, opts = {}) {
-      const res = await fetch(`${PB_URL}${path}`, {
-        headers: { "Content-Type": "application/json", ...(opts.headers || {}) },
-        ...opts
+    // Mason City Schools Editorial Standard (Slide 32): Always use long date format
+    function formatLongDate(isoString) {
+      if (!isoString) return 'Not yet counted';
+      const d = new Date(isoString);
+      if (Number.isNaN(d.getTime())) return 'Not yet counted';
+      return d.toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
       });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.message || data.error || `HTTP ${res.status}`);
-      return data;
     }
 
-    async function init() {
-      const savedName = localStorage.getItem("cosmic_barista");
-      if (savedName) document.getElementById("barista-name").value = savedName;
+    function showToast(message, isError = false) {
+      const el = document.getElementById('toast');
+      el.textContent = message;
+      el.classList.toggle('error', isError);
+      el.style.display = 'block';
+      clearTimeout(el._timer);
+      el._timer = setTimeout(() => {
+        el.style.display = 'none';
+      }, 4200);
+    }
 
-      const host = window.location.hostname;
-      const isDev = host.includes("dev") || host === "localhost" || host === "127.0.0.1";
-      document.getElementById("env-badge").textContent = isDev
-        ? `DEV SANDBOX (${host})`
-        : `PRODUCTION LIVE (${host})`;
+    // -------------------------------------------------------------------------
+    // Navigation & Admin Dropdown Behavior
+    // -------------------------------------------------------------------------
+    const ADMIN_TABS = new Set(['stock', 'dripos', 'qr']);
 
-      try {
-        const [zonesRes, itemsRes, zcRes] = await Promise.all([
-          pbFetch("/api/collections/zones/records?perPage=50&sort=name"),
-          pbFetch("/api/collections/items/records?perPage=500&sort=category,name"),
-          pbFetch("/api/collections/zone_counts/records?perPage=500")
-        ]);
+    function toggleAdminDropdown(event) {
+      event.stopPropagation();
+      const dropdown = document.getElementById('adminDropdown');
+      const btn = document.getElementById('adminDropdownBtn');
+      const isOpen = dropdown.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(isOpen));
+    }
 
-        state.zones = zonesRes.items || [];
-        state.items = itemsRes.items || [];
-        (zcRes.items || []).forEach(r => state.zoneCounts.set(`${r.item}--${r.zone}`, r.quantity));
+    function closeAdminDropdown() {
+      const dropdown = document.getElementById('adminDropdown');
+      const btn = document.getElementById('adminDropdownBtn');
+      dropdown.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    }
 
-        const zoneSelect = document.getElementById("zone-select");
-        zoneSelect.innerHTML = state.zones.map(z => `<option value="${z.id}">${z.name}</option>`).join("");
-
-        const params = new URLSearchParams(window.location.search);
-        const requestedZone = params.get("zone");
-        const initialZone = state.zones.some(z => z.id === requestedZone)
-          ? requestedZone
-          : (state.zones[0]?.id || "");
-
-        zoneSelect.value = initialZone;
-        selectZone(initialZone);
-        renderStockTable();
-        renderQrCards();
-        loadLeaderboard();
-      } catch (err) {
-        document.getElementById("env-badge").textContent = `Connection Error: ${err.message}`;
-      }
+    function selectAdminTab(tabId) {
+      closeAdminDropdown();
+      switchTab(tabId);
     }
 
     function switchTab(tabId) {
-      ["count", "stock", "leaders", "dripos", "qr"].forEach(id => {
-        document.getElementById(`tab-${id}`).classList.toggle("hidden", id !== tabId);
-        const btn = document.getElementById(`nav-${id}`);
-        btn.className = id === tabId
-          ? "tab-btn px-3 py-1.5 rounded-lg font-medium bg-indigo-600 text-white"
-          : "tab-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800";
+      document.querySelectorAll('.view-section').forEach((sec) => {
+        sec.classList.toggle('active', sec.id === `tab-${tabId}`);
       });
+
+      // Highlight top-level buttons
+      document.querySelectorAll('.nav-bar > .nav-btn').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.tab === tabId);
+      });
+
+      // Highlight Admin dropdown button & active menu item when an Admin view is active
+      const adminBtn = document.getElementById('adminDropdownBtn');
+      adminBtn.classList.toggle('active', ADMIN_TABS.has(tabId));
+      document.querySelectorAll('.dropdown-item').forEach((item) => {
+        item.classList.toggle('active', item.dataset.tab === tabId);
+      });
+
+      if (tabId === 'leaderboard') {
+        loadLeaderboard();
+      }
+    }
+
+    document.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('adminDropdown');
+      if (dropdown && !dropdown.contains(e.target)) {
+        closeAdminDropdown();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeAdminDropdown();
+      }
+    });
+
+    // -------------------------------------------------------------------------
+    // Data Fetching from PocketBase REST API
+    // -------------------------------------------------------------------------
+    async function pbList(collection, query = '') {
+      const res = await fetch(`${PB_BASE}/api/collections/${collection}/records?perPage=500${query ? '&' + query : ''}`);
+      if (!res.ok) throw new Error(`Failed to load ${collection} (${res.status})`);
+      const data = await res.json();
+      return data.items || [];
+    }
+
+    async function loadAllData() {
+      try {
+        const [zones, items, zoneCounts] = await Promise.all([
+          pbList('zones', 'sort=name'),
+          pbList('items', 'sort=category,name'),
+          pbList('zone_counts')
+        ]);
+        state.zones = zones;
+        state.items = items;
+        state.zoneCounts = zoneCounts;
+
+        const params = new URLSearchParams(window.location.search);
+        const requestedZone = params.get('zone');
+        if (!state.selectedZoneId) {
+          const match = zones.find((z) => z.id === requestedZone);
+          state.selectedZoneId = match ? match.id : (zones[0]?.id || null);
+        }
+
+        renderZoneControls();
+        renderZoneCountCards();
+        renderStockTable();
+        renderQrCards();
+      } catch (err) {
+        console.error(err);
+        showToast('Could not connect to PocketBase API. Ensure the server is running and seeded.', true);
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Barista Zone Counting UI
+    // -------------------------------------------------------------------------
+    function renderZoneControls() {
+      const pillsEl = document.getElementById('zonePills');
+      const selectEl = document.getElementById('zoneSelectMobile');
+
+      pillsEl.innerHTML = state.zones
+        .map(
+          (z) => `<button type="button" class="zone-pill ${z.id === state.selectedZoneId ? 'active' : ''}" onclick="selectZone('${z.id}')">${escapeHtml(z.name)}</button>`
+        )
+        .join('');
+
+      selectEl.innerHTML = state.zones
+        .map(
+          (z) => `<option value="${z.id}" ${z.id === state.selectedZoneId ? 'selected' : ''}>${escapeHtml(z.name)}</option>`
+        )
+        .join('');
     }
 
     function selectZone(zoneId) {
-      state.currentZone = zoneId;
-      state.draftCounts.clear();
-
-      const url = new URL(window.location);
-      url.searchParams.set("zone", zoneId);
-      window.history.replaceState({}, "", url);
-
-      const zone = state.zones.find(z => z.id === zoneId);
-      document.getElementById("zone-title").textContent = zone ? zone.name : "Select a Zone";
-      document.getElementById("zone-desc").textContent = zone ? zone.description : "";
-
-      const zoneItems = state.items.filter(it => it.active && Array.isArray(it.zones) && it.zones.includes(zoneId));
-      document.getElementById("zone-item-count").textContent = `${zoneItems.length} active items`;
-
-      const list = document.getElementById("zone-items-list");
-      list.innerHTML = zoneItems.map(it => {
-        const key = `${it.id}--${zoneId}`;
-        const currentQty = state.zoneCounts.get(key) ?? 0;
-        state.draftCounts.set(it.id, currentQty);
-        const multiLocBadge = it.zones.length > 1
-          ? `<span class="text-xs bg-indigo-950 text-indigo-300 border border-indigo-800 px-2 py-0.5 rounded">Multi-zone (${it.zones.length})</span>`
-          : "";
-
-        return `
-          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center justify-between gap-3">
-            <div>
-              <div class="flex flex-wrap items-center gap-2">
-                <h3 class="font-semibold text-white">${it.name}</h3>
-                ${multiLocBadge}
-              </div>
-              <p class="text-xs text-slate-400 mt-0.5">Unit: <strong class="text-slate-200">${it.unit}</strong> &bull; Total across shop: ${it.total_on_hand}</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <button type="button" onclick="adjustQty('${it.id}', -1)"
-                class="w-11 h-11 rounded-xl bg-slate-800 hover:bg-slate-700 text-xl font-bold text-white">-</button>
-              <input id="qty-${it.id}" type="number" min="0" step="1" value="${currentQty}"
-                onchange="setQty('${it.id}', this.value)"
-                class="w-16 h-11 text-center bg-slate-950 border border-slate-700 rounded-xl text-lg font-bold text-white" />
-              <button type="button" onclick="adjustQty('${it.id}', 1)"
-                class="w-11 h-11 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xl font-bold text-white">+</button>
-            </div>
-          </div>`;
-      }).join("");
+      state.selectedZoneId = zoneId;
+      state.draftQuantities = {};
+      const url = new URL(window.location.href);
+      url.searchParams.set('zone', zoneId);
+      window.history.replaceState({}, '', url);
+      renderZoneControls();
+      renderZoneCountCards();
     }
 
-    function adjustQty(itemId, delta) {
-      const next = Math.max(0, (state.draftCounts.get(itemId) || 0) + delta);
-      state.draftCounts.set(itemId, next);
-      document.getElementById(`qty-${itemId}`).value = next;
+    function getSavedZoneQty(itemId, zoneId) {
+      const rec = state.zoneCounts.find((zc) => zc.item === itemId && zc.zone === zoneId);
+      return rec ? Number(rec.quantity) : 0;
     }
 
-    function setQty(itemId, raw) {
-      const next = Math.max(0, Math.floor(Number(raw) || 0));
-      state.draftCounts.set(itemId, next);
-      document.getElementById(`qty-${itemId}`).value = next;
-    }
+    function renderZoneCountCards() {
+      const zone = state.zones.find((z) => z.id === state.selectedZoneId);
+      document.getElementById('activeZoneHeading').textContent = zone ? zone.name : 'Station Inventory Count';
+      document.getElementById('activeZoneSubheading').textContent = zone?.description || 'Count unopened whole units only.';
 
-    async function submitZoneCounts() {
-      const barista = document.getElementById("barista-name").value.trim() || "cafe-ipad";
-      const btn = document.getElementById("submit-count-btn");
-      const statusEl = document.getElementById("submit-status");
-      btn.disabled = true;
-      btn.textContent = "Saving counts...";
+      const zoneItems = state.items.filter(
+        (item) => item.active !== false && Array.isArray(item.zones) && item.zones.includes(state.selectedZoneId)
+      );
 
-      try {
-        for (const [itemId, qty] of state.draftCounts.entries()) {
-          const zcId = `${itemId}--${state.currentZone}`;
-          const payload = { item: itemId, zone: state.currentZone, quantity: qty, updated_by: barista };
-          try {
-            await pbFetch(`/api/collections/zone_counts/records/${zcId}`, {
-              method: "PATCH",
-              body: JSON.stringify(payload)
-            });
-          } catch (_) {
-            await pbFetch(`/api/collections/zone_counts/records`, {
-              method: "POST",
-              body: JSON.stringify({ id: zcId, ...payload })
-            });
-          }
-          state.zoneCounts.set(zcId, qty);
-        }
-
-        // Refresh updated totals from server
-        const itemsRes = await pbFetch("/api/collections/items/records?perPage=500&sort=category,name");
-        state.items = itemsRes.items || [];
-        selectZone(state.currentZone);
-        renderStockTable();
-        loadLeaderboard();
-
-        statusEl.textContent = `Saved ${state.draftCounts.size} items at ${new Date().toLocaleTimeString()} by ${barista}.`;
-        statusEl.classList.remove("hidden");
-      } catch (err) {
-        alert(`Error saving counts: ${err.message}`);
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "Submit Zone Inventory";
-      }
-    }
-
-    function renderStockTable() {
-      const query = document.getElementById("stock-search").value.toLowerCase();
-      const lowOnly = document.getElementById("filter-low").checked;
-      const showInactive = document.getElementById("filter-inactive").checked;
-
-      const filtered = state.items.filter(it => {
-        if (!showInactive && !it.active) return false;
-        if (lowOnly && it.total_on_hand > it.reorder_point) return false;
-        if (query && !`${it.name} ${it.category} ${it.vendor}`.toLowerCase().includes(query)) return false;
-        return true;
-      });
-
-      document.getElementById("stock-tbody").innerHTML = filtered.map(it => {
-        let badge = `<span class="px-2 py-0.5 rounded text-xs bg-emerald-950 text-emerald-300 border border-emerald-800">OK</span>`;
-        if (!it.active) badge = `<span class="px-2 py-0.5 rounded text-xs bg-slate-800 text-slate-400">Inactive</span>`;
-        else if (it.total_on_hand <= 0) badge = `<span class="px-2 py-0.5 rounded text-xs bg-rose-950 text-rose-300 border border-rose-800 font-bold">OUT (0)</span>`;
-        else if (it.total_on_hand <= it.reorder_point) badge = `<span class="px-2 py-0.5 rounded text-xs bg-amber-950 text-amber-300 border border-amber-800">LOW</span>`;
-
-        return `
-          <tr class="hover:bg-slate-800/40">
-            <td class="px-4 py-2.5 font-medium text-white">${it.name} <span class="text-xs text-slate-400">(${it.unit})</span></td>
-            <td class="px-4 py-2.5 text-slate-400 text-xs">${it.category}</td>
-            <td class="px-4 py-2.5 text-right font-bold text-white">${it.total_on_hand}</td>
-            <td class="px-4 py-2.5 text-right text-slate-300">${it.estimated_on_hand ?? it.total_on_hand}</td>
-            <td class="px-4 py-2.5 text-right text-slate-400">${it.par_level} / ${it.reorder_point}</td>
-            <td class="px-4 py-2.5">${badge}</td>
-          </tr>`;
-      }).join("");
-    }
-
-    async function loadLeaderboard() {
-      try {
-        const logs = await pbFetch("/api/collections/count_logs/records?perPage=500&sort=-created");
-        const counts = new Map();
-        (logs.items || []).forEach(l => {
-          const who = l.counted_by || "cafe-ipad";
-          if (who === "initial-seed") return;
-          counts.set(who, (counts.get(who) || 0) + 1);
-        });
-        const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);
-        document.getElementById("leaderboard-list").innerHTML = sorted.length
-          ? sorted.map(([name, total], i) => `
-              <div class="flex items-center justify-between bg-slate-950/70 px-4 py-3 rounded-lg border border-slate-800">
-                <span class="font-medium text-white">#${i + 1} &nbsp; ${name}</span>
-                <span class="text-sm font-bold text-indigo-400">${total} item counts</span>
-              </div>`).join("")
-          : `<p class="text-sm text-slate-400">No barista counts logged yet.</p>`;
-      } catch (_) {}
-    }
-
-    async function uploadDriposCsv() {
-      const email = document.getElementById("admin-email").value.trim();
-      const password = document.getElementById("admin-pass").value;
-      const file = document.getElementById("dripos-file").files[0];
-      const out = document.getElementById("dripos-result");
-
-      if (!email || !password || !file) {
-        alert("Please enter superuser credentials and choose a DripOS CSV file.");
+      const grid = document.getElementById('countGrid');
+      if (zoneItems.length === 0) {
+        grid.innerHTML = `<div class="card">No active items assigned to this station.</div>`;
+        updateSaveDock();
         return;
       }
 
-      try {
-        const auth = await pbFetch("/api/collections/_superusers/auth-with-password", {
-          method: "POST",
-          body: JSON.stringify({ identity: email, password })
-        });
+      grid.innerHTML = zoneItems
+        .map((item) => {
+          const savedQty = getSavedZoneQty(item.id, state.selectedZoneId);
+          const currentQty = Object.prototype.hasOwnProperty.call(state.draftQuantities, item.id)
+            ? state.draftQuantities[item.id]
+            : savedQty;
+          const isModified = currentQty !== savedQty;
 
-        const text = await file.text();
-        const lines = text.split(/\r?\n/).filter(Boolean);
-        const headers = lines[0].split(",").map(h => h.replace(/^"|"$/g, "").trim().toLowerCase());
-        const skuIdx = headers.findIndex(h => h.includes("product") || h.includes("modifier") || h.includes("name") || h.includes("sku"));
-        const qtyIdx = headers.findIndex(h => h.includes("qty") || h.includes("quantity") || h.includes("sold") || h.includes("count"));
+          return `
+            <div class="item-count-card ${isModified ? 'modified' : ''}" id="card-${item.id}">
+              <div class="item-meta-top">
+                <div>
+                  <div class="item-name">${escapeHtml(item.name)}</div>
+                  <span class="unit-tag">${escapeHtml(item.unit)}</span>
+                </div>
+                <div class="prev-count-note">Previous: <strong>${savedQty}</strong></div>
+              </div>
+              <div class="stepper-row">
+                <button type="button" class="stepper-btn" aria-label="Decrease ${escapeHtml(item.name)}" onclick="stepQty('${item.id}', -1)">&minus;</button>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  class="stepper-input"
+                  id="input-${item.id}"
+                  value="${currentQty}"
+                  onchange="setManualQty('${item.id}', this.value)"
+                />
+                <button type="button" class="stepper-btn plus" aria-label="Increase ${escapeHtml(item.name)}" onclick="stepQty('${item.id}', 1)">+</button>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
 
-        if (skuIdx === -1 || qtyIdx === -1) {
-          throw new Error(`Could not detect SKU/Name and Quantity columns in headers: ${headers.join(", ")}`);
-        }
+      updateSaveDock();
+    }
 
-        const rows = lines.slice(1).map(line => {
-          const cols = line.split(",").map(c => c.replace(/^"|"$/g, "").trim());
-          return { sku: cols[skuIdx], qty: Number(cols[qtyIdx]) || 0 };
-        }).filter(r => r.sku && r.qty > 0);
+    function stepQty(itemId, delta) {
+      const savedQty = getSavedZoneQty(itemId, state.selectedZoneId);
+      const curr = Object.prototype.hasOwnProperty.call(state.draftQuantities, itemId)
+        ? state.draftQuantities[itemId]
+        : savedQty;
+      const next = Math.max(0, curr + delta);
+      state.draftQuantities[itemId] = next;
 
-        const result = await pbFetch("/api/cosmic/import-dripos", {
-          method: "POST",
-          headers: { Authorization: auth.token },
-          body: JSON.stringify({ filename: file.name, rows })
-        });
+      const input = document.getElementById(`input-${itemId}`);
+      const card = document.getElementById(`card-${itemId}`);
+      if (input) input.value = next;
+      if (card) card.classList.toggle('modified', next !== savedQty);
+      updateSaveDock();
+    }
 
-        out.textContent = JSON.stringify(result, null, 2);
-        out.classList.remove("hidden");
-      } catch (err) {
-        out.textContent = `Import failed: ${err.message}`;
-        out.classList.remove("hidden");
+    function setManualQty(itemId, rawVal) {
+      const savedQty = getSavedZoneQty(itemId, state.selectedZoneId);
+      const parsed = Math.max(0, Math.floor(Number(rawVal) || 0));
+      state.draftQuantities[itemId] = parsed;
+
+      const input = document.getElementById(`input-${itemId}`);
+      const card = document.getElementById(`card-${itemId}`);
+      if (input) input.value = parsed;
+      if (card) card.classList.toggle('modified', parsed !== savedQty);
+      updateSaveDock();
+    }
+
+    function updateSaveDock() {
+      const changedIds = Object.keys(state.draftQuantities).filter(
+        (id) => state.draftQuantities[id] !== getSavedZoneQty(id, state.selectedZoneId)
+      );
+      const statusEl = document.getElementById('saveStatusText');
+      if (changedIds.length === 0) {
+        statusEl.textContent = 'All station counts match saved records (or click Save to confirm unchanged).';
+      } else {
+        statusEl.textContent = `${changedIds.length} item(s) updated in this station — ready to save.`;
       }
     }
 
-    function renderQrCards() {
-      const grid = document.getElementById("qr-grid");
-      grid.innerHTML = state.zones.map(z => {
-        const targetUrl = `${window.location.origin}/?zone=${encodeURIComponent(z.id)}`;
-        return `
-          <div class="qr-card bg-white text-slate-900 rounded-xl p-5 flex items-center gap-4 border border-slate-300">
-            <div id="qr-${z.id}" class="shrink-0"></div>
-            <div>
-              <p class="text-xs font-bold uppercase tracking-wider text-indigo-600">Cosmic Cafe Inventory</p>
-              <h3 class="text-xl font-extrabold text-slate-900">${z.name}</h3>
-              <p class="text-xs text-slate-600 mt-1">${z.description}</p>
-              <p class="text-[11px] font-mono text-slate-500 mt-2 break-all">${targetUrl}</p>
-            </div>
-          </div>`;
-      }).join("");
+    async function saveZoneCounts() {
+      const btn = document.getElementById('saveZoneBtn');
+      const baristaInput = document.getElementById('baristaNameInput');
+      const countedBy = (baristaInput.value || '').trim() || 'cafe-ipad';
+      localStorage.setItem('cosmic_barista_name', baristaInput.value.trim());
 
-      state.zones.forEach(z => {
-        const targetUrl = `${window.location.origin}/?zone=${encodeURIComponent(z.id)}`;
-        new QRCode(document.getElementById(`qr-${z.id}`), {
-          text: targetUrl,
-          width: 112,
-          height: 112
-        });
-      });
+      const zoneItems = state.items.filter(
+        (item) => item.active !== false && Array.isArray(item.zones) && item.zones.includes(state.selectedZoneId)
+      );
+
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      try {
+        for (const item of zoneItems) {
+          const savedQty = getSavedZoneQty(item.id, state.selectedZoneId);
+          const newQty = Object.prototype.hasOwnProperty.call(state.draftQuantities, item.id)
+            ? state.draftQuantities[item.id]
+            : savedQty;
+
+          const existingRec = state.zoneCounts.find(
+            (zc) => zc.item === item.id && zc.zone === state.selectedZoneId
+          );
+
+          const payload = {
+            item: item.id,
+            zone: state.selectedZoneId,
+            quantity: newQty,
+            updated_by: countedBy
+          };
+
+          if (existingRec) {
+            await fetch(`${PB_BASE}/api/collections/zone_counts/records/${existingRec.id}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+          } else {
+            await fetch(`${PB_BASE}/api/collections/zone_counts/records`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+          }
+        }
+
+        state.draftQuantities = {};
+        await loadAllData();
+        showToast('Station count saved and cross-zone totals updated.');
+      } catch (err) {
+        console.error(err);
+        showToast('Error saving station count. Please try again.', true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Zone Count';
+      }
     }
 
-    init();
+    // -------------------------------------------------------------------------
+    // Live Stock Table
+    // -------------------------------------------------------------------------
+    function setStockFilter(filter, btnEl) {
+      state.stockFilter = filter;
+      document.querySelectorAll('[data-stock-filter]').forEach((b) => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+      renderStockTable();
+    }
+
+    function renderStockTable() {
+      const activeItems = state.items.filter((i) => i.active !== false);
+      const zeroCount = activeItems.filter((i) => Number(i.total_on_hand) <= 0).length;
+      const lowCount = activeItems.filter(
+        (i) => Number(i.total_on_hand) > 0 && Number(i.total_on_hand) <= Number(i.reorder_point)
+      ).length;
+      const inactiveCount = state.items.filter((i) => i.active === false).length;
+
+      document.getElementById('stockKpis').innerHTML = `
+        <div class="kpi-card ok"><div class="kpi-label">Active Menu SKUs</div><div class="kpi-value">${activeItems.length}</div></div>
+        <div class="kpi-card danger"><div class="kpi-label">Out of Stock (0)</div><div class="kpi-value">${zeroCount}</div></div>
+        <div class="kpi-card warn"><div class="kpi-label">At or Below Reorder</div><div class="kpi-value">${lowCount}</div></div>
+        <div class="kpi-card"><div class="kpi-label">Seasonal Campaign Off</div><div class="kpi-value">${inactiveCount}</div></div>
+      `;
+
+      const q = (document.getElementById('stockSearchInput').value || '').trim().toLowerCase();
+      const zoneMap = Object.fromEntries(state.zones.map((z) => [z.id, z.name]));
+
+      const filtered = state.items.filter((item) => {
+        const isActive = item.active !== false;
+        const onHand = Number(item.total_on_hand || 0);
+        const reorder = Number(item.reorder_point || 0);
+
+        if (state.stockFilter === 'all' && !isActive) return false;
+        if (state.stockFilter === 'zero' && (!isActive || onHand > 0)) return false;
+        if (state.stockFilter === 'low' && (!isActive || onHand > reorder)) return false;
+        if (state.stockFilter === 'inactive' && isActive) return false;
+
+        if (q) {
+          const hay = `${item.name} ${item.category} ${item.vendor || ''}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      const tbody = document.getElementById('stockTableBody');
+      tbody.innerHTML = filtered
+        .map((item) => {
+          const onHand = Number(item.total_on_hand || 0);
+          const est = Number(item.estimated_on_hand ?? onHand);
+          const reorder = Number(item.reorder_point || 0);
+          const par = Number(item.par_level || 0);
+
+          let statusBadge = '<span class="badge badge-ok">Healthy</span>';
+          if (item.active === false) {
+            statusBadge = '<span class="badge badge-inactive">Seasonal Off</span>';
+          } else if (onHand <= 0) {
+            statusBadge = '<span class="badge badge-zero">Out of Stock</span>';
+          } else if (onHand <= reorder) {
+            statusBadge = '<span class="badge badge-low">Reorder</span>';
+          }
+
+          const zonesLabel = (item.zones || []).map((zid) => zoneMap[zid] || zid).join(', ');
+
+          return `
+            <tr>
+              <td><strong>${escapeHtml(item.name)}</strong><br><span style="font-size:0.8rem;color:var(--text-secondary);">${escapeHtml(item.unit)}</span></td>
+              <td>${escapeHtml(item.category || '')}</td>
+              <td>${escapeHtml(zonesLabel)}</td>
+              <td><strong>${onHand}</strong></td>
+              <td>${est}</td>
+              <td>${reorder} / ${par}</td>
+              <td>${statusBadge}</td>
+              <td>${formatLongDate(item.last_counted_at)}</td>
+            </tr>
+          `;
+        })
+        .join('');
+    }
+
+    // -------------------------------------------------------------------------
+    // DripOS CSV Importer
+    // -------------------------------------------------------------------------
+    const dropzone = document.getElementById('csvDropzone');
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      if (e.dataTransfer.files?.[0]) handleCsvFile(e.dataTransfer.files[0]);
+    });
+
+    function parseCsvLine(line) {
+      const out = [];
+      let cur = '';
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          inQuotes = !inQuotes;
+        } else if (ch === ',' && !inQuotes) {
+          out.push(cur.trim());
+          cur = '';
+        } else {
+          cur += ch;
+        }
+      }
+      out.push(cur.trim());
+      return out;
+    }
+
+    async function handleCsvFile(file) {
+      if (!file) return;
+      const text = await file.text();
+      const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+      if (lines.length < 2) {
+        showToast('CSV file appears empty.', true);
+        return;
+      }
+
+      const headers = parseCsvLine(lines[0]).map((h) => h.toLowerCase());
+      const skuIdx = headers.findIndex((h) => ['sku', 'item', 'product', 'modifier', 'name'].some((k) => h.includes(k)));
+      const qtyIdx = headers.findIndex((h) => ['qty', 'quantity', 'sold', 'count'].some((k) => h.includes(k)));
+
+      if (skuIdx === -1 || qtyIdx === -1) {
+        showToast('Could not locate SKU/Name and Quantity columns in CSV header.', true);
+        return;
+      }
+
+      const rows = [];
+      for (let i = 1; i < lines.length; i++) {
+        const cols = parseCsvLine(lines[i]);
+        const sku = (cols[skuIdx] || '').trim();
+        const qty = Number(cols[qtyIdx] || 0);
+        if (sku && qty > 0) rows.push({ sku, qty });
+      }
+
+      state.parsedCsv = { filename: file.name, rows };
+      document.getElementById('csvPreviewSummary').textContent = `${file.name} — ${rows.length} sales rows ready`;
+      document.getElementById('csvPreviewBody').innerHTML = rows
+        .slice(0, 25)
+        .map((r) => `<tr><td>${escapeHtml(r.sku)}</td><td>${r.qty}</td></tr>`)
+        .join('');
+      document.getElementById('csvPreviewBox').style.display = 'block';
+    }
+
+    async function uploadParsedCsv() {
+      if (!state.parsedCsv) return;
+      const email = document.getElementById('adminEmailInput').value.trim();
+      const password = document.getElementById('adminPassInput').value;
+      if (!email || !password) {
+        showToast('Enter advisor PocketBase email and password first.', true);
+        return;
+      }
+
+      const btn = document.getElementById('submitCsvBtn');
+      btn.disabled = true;
+      btn.textContent = 'Importing...';
+
+      try {
+        const authRes = await fetch(`${PB_BASE}/api/collections/_superusers/auth-with-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identity: email, password })
+        });
+        if (!authRes.ok) throw new Error('Superuser authentication failed.');
+        const { token } = await authRes.json();
+
+        const importRes = await fetch(`${PB_BASE}/api/cosmic/import-dripos`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token
+          },
+          body: JSON.stringify(state.parsedCsv)
+        });
+        const result = await importRes.json();
+        if (importRes.status === 409) {
+          showToast('Duplicate blocked: This exact DripOS CSV was already imported.', true);
+          return;
+        }
+        if (!importRes.ok) throw new Error(result.error || 'Import failed.');
+
+        showToast(`DripOS CSV imported (${result.deductionsApplied} recipe deductions applied).`);
+        await loadAllData();
+      } catch (err) {
+        showToast(err.message || 'CSV import error.', true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Apply POS Deductions';
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Printable QR Station Signs
+    // -------------------------------------------------------------------------
+    function renderQrCards() {
+      const grid = document.getElementById('qrGrid');
+      grid.innerHTML = state.zones
+        .map((zone) => {
+          const targetUrl = `${PB_BASE}/?zone=${encodeURIComponent(zone.id)}`;
+          const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(targetUrl)}`;
+          return `
+            <div class="qr-card">
+              <div class="qr-card-banner">
+                <span>Cosmic Cafe &bull; Station Check</span>
+              </div>
+              <div class="qr-card-body">
+                <div class="qr-zone-title">${escapeHtml(zone.name)}</div>
+                <div class="qr-zone-desc">${escapeHtml(zone.description || '')}</div>
+                <img class="qr-img" src="${qrSrc}" alt="QR code for ${escapeHtml(zone.name)}" loading="lazy" />
+                <div class="qr-url">${escapeHtml(targetUrl)}</div>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    // -------------------------------------------------------------------------
+    // Barista Leaderboard
+    // -------------------------------------------------------------------------
+    async function loadLeaderboard() {
+      try {
+        const logs = await pbList('count_logs', 'sort=-created');
+        const countsByUser = {};
+        for (const row of logs) {
+          const user = (row.counted_by || 'cafe-ipad').trim();
+          if (!countsByUser[user]) {
+            countsByUser[user] = { count: 0, latest: row.created };
+          }
+          countsByUser[user].count += 1;
+        }
+
+        const ranked = Object.entries(countsByUser).sort((a, b) => b[1].count - a[1].count);
+        const tbody = document.getElementById('leaderboardBody');
+        if (ranked.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4">No inventory counts logged yet.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = ranked
+          .map(
+            ([user, info], idx) => `
+              <tr>
+                <td><strong>#${idx + 1}</strong></td>
+                <td><strong>${escapeHtml(user)}</strong></td>
+                <td>${info.count} item count(s)</td>
+                <td>${formatLongDate(info.latest)}</td>
+              </tr>
+            `
+          )
+          .join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Initialize saved barista name & environment badge
+    (function init() {
+      const savedName = localStorage.getItem('cosmic_barista_name');
+      if (savedName) {
+        document.getElementById('baristaNameInput').value = savedName;
+      }
+
+      const host = window.location.hostname;
+      const badge = document.getElementById('envBadge');
+      if (host.includes('dev') || window.location.port === '8091') {
+        badge.textContent = 'Dev Sandbox';
+      } else if (host.includes('inventory') || window.location.port === '8080') {
+        badge.textContent = 'Live Cafe';
+        badge.classList.add('prod');
+      }
+
+      loadAllData();
+    })();
   </script>
 </body>
 </html>
